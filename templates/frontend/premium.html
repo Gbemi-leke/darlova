@@ -1,0 +1,325 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block title %}Premium — Darlova{% endblock %}
+{% block description %}Unlock more with Darlova Premium.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'frontend/css/premium.css' %}">{% endblock %}
+
+{% block content %}
+<main class="container py-5">
+  <section class="text-center mx-auto mb-5" style="max-width: 720px">
+    <span class="chip mb-3 reveal">
+      <i class="bi bi-gem"></i>
+      Darlova Premium
+    </span>
+    <h1 class="display-4 fw-bold mb-3 reveal reveal-d1">
+      Free to fall in love.
+      <br />
+      <span class="text-gradient">Premium to do it faster.</span>
+    </h1>
+    <p class="lead text-muted-2 mb-4 reveal reveal-d2">
+      Unlock more likes, see who's into you and stand out from the crowd.
+    </p>
+    <div class="billing-toggle glass reveal reveal-d3" role="group" aria-label="Billing period">
+      <span class="pill" aria-hidden="true"></span>
+      <button type="button" class="active" data-bill="monthly">Monthly</button>
+      <button type="button" data-bill="yearly">
+        Yearly
+        <span class="badge rounded-pill ms-1 save-badge">-20%</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- EDIT PRICES: change data-monthly on each plan (in Naira). Yearly price = monthly x 12 x 0.8 -->
+  <section class="row g-4 align-items-stretch mb-5 pb-4">
+    <div class="col-lg-4 reveal">
+      <div class="glass plan">
+        <h2 class="h4 mb-1">Free</h2>
+        <p class="text-muted-2 small">The essentials to start meeting people.</p>
+        <div class="my-3"><span class="price">₦0</span></div>
+        <ul class="list-unstyled my-4 flex-grow-1">
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Daily likes
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Chat with matches
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Verified profiles
+          </li>
+          <li class="off">
+            <i class="bi bi-dash-circle"></i>
+            See who liked you
+          </li>
+          <li class="off">
+            <i class="bi bi-dash-circle"></i>
+            Rewind & boosts
+          </li>
+        </ul>
+        {% if user.is_authenticated %}
+        <a href="{% url 'discover' %}" class="btn btn-glass btn-lg w-100">Your current plan</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-glass btn-lg w-100">Start free</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-4 reveal reveal-d1">
+      <div class="glass-strong plan popular">
+        <span class="ribbon">MOST POPULAR</span>
+        <h2 class="h4 mb-1">Plus</h2>
+        <p class="text-muted-2 small">More likes, more matches.</p>
+        <div class="my-3">
+          <span class="price" data-monthly="2500">₦2,500</span>
+          <span class="text-muted-2 per">/month</span>
+          <div class="small text-brand fw-semibold save mt-1" style="min-height: 1.2em"></div>
+        </div>
+        <ul class="list-unstyled my-4 flex-grow-1">
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Unlimited likes
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Rewind your last swipe
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Advanced filters
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            No ads
+          </li>
+          <li class="off">
+            <i class="bi bi-dash-circle"></i>
+            See who liked you
+          </li>
+        </ul>
+        <button class="btn btn-brand btn-lg w-100" data-plan="Plus">Get Plus</button>
+      </div>
+    </div>
+    <div class="col-lg-4 reveal reveal-d2">
+      <div class="glass plan">
+        <h2 class="h4 mb-1">
+          Premium
+          <i class="bi bi-gem text-violet"></i>
+        </h2>
+        <p class="text-muted-2 small">Every feature, every advantage.</p>
+        <div class="my-3">
+          <span class="price" data-monthly="5000">₦5,000</span>
+          <span class="text-muted-2 per">/month</span>
+          <div class="small text-brand fw-semibold save mt-1" style="min-height: 1.2em"></div>
+        </div>
+        <ul class="list-unstyled my-4 flex-grow-1">
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Everything in Plus
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            See who liked you
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Weekly profile boost
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            5 super likes a week
+          </li>
+          <li>
+            <i class="bi bi-check-circle-fill"></i>
+            Message before matching
+          </li>
+        </ul>
+        <button class="btn btn-gradient btn-lg w-100" data-plan="Premium">Get Premium</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="row g-4 mb-5 pb-4 text-center">
+    <div class="col-6 col-lg-3 reveal">
+      <div class="perk-icon mx-auto mb-3"><i class="bi bi-eye"></i></div>
+      <h3 class="h6">See who likes you</h3>
+      <p class="small text-muted-2">Skip the guessing and match instantly.</p>
+    </div>
+    <div class="col-6 col-lg-3 reveal reveal-d1">
+      <div class="perk-icon mx-auto mb-3" style="background: var(--chip-violet); color: var(--violet-text)">
+        <i class="bi bi-lightning-charge"></i>
+      </div>
+      <h3 class="h6">Boost your profile</h3>
+      <p class="small text-muted-2">Be seen first in your area for 30 minutes.</p>
+    </div>
+    <div class="col-6 col-lg-3 reveal reveal-d2">
+      <div class="perk-icon mx-auto mb-3"><i class="bi bi-arrow-counterclockwise"></i></div>
+      <h3 class="h6">Rewind</h3>
+      <p class="small text-muted-2">Passed by mistake? Bring them back.</p>
+    </div>
+    <div class="col-6 col-lg-3 reveal reveal-d3">
+      <div class="perk-icon mx-auto mb-3" style="background: var(--chip-violet); color: var(--violet-text)">
+        <i class="bi bi-sliders"></i>
+      </div>
+      <h3 class="h6">Advanced filters</h3>
+      <p class="small text-muted-2">Filter by height, faith, lifestyle and more.</p>
+    </div>
+  </section>
+
+  <section class="glass p-3 p-lg-4 mb-5 reveal">
+    <h2 class="h3 fw-bold p-2 mb-3">Compare plans</h2>
+    <div class="table-responsive">
+      <table class="table compare align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col" class="text-center">Free</th>
+            <th scope="col" class="text-center">Plus</th>
+            <th scope="col" class="text-center">Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Likes per day</td>
+            <td class="text-center">Limited</td>
+            <td class="text-center">Unlimited</td>
+            <td class="text-center">Unlimited</td>
+          </tr>
+          <tr>
+            <td>Chat with matches</td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+          </tr>
+          <tr>
+            <td>Rewind</td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+          </tr>
+          <tr>
+            <td>Advanced filters</td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+          </tr>
+          <tr>
+            <td>See who liked you</td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+          </tr>
+          <tr>
+            <td>Weekly boost</td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center"><i class="bi bi-check-circle-fill"></i></td>
+          </tr>
+          <tr>
+            <td>Super likes</td>
+            <td class="text-center"><i class="bi bi-dash"></i></td>
+            <td class="text-center">1 / week</td>
+            <td class="text-center">5 / week</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="row gy-5 gx-lg-5">
+    <div class="col-lg-4">
+      <div class="eyebrow mb-2">Billing</div>
+      <h2 class="h2 fw-bold">Good to know</h2>
+    </div>
+    <div class="col-lg-8">
+      <div class="accordion" id="pf">
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#p1">How do I pay?</button>
+          </h3>
+          <div id="p1" class="accordion-collapse collapse show" data-bs-parent="#pf">
+            <div class="accordion-body text-muted-2">
+              Card, bank transfer or USSD, processed securely by our payment partner.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#p2">
+              Will it renew automatically?
+            </button>
+          </h3>
+          <div id="p2" class="accordion-collapse collapse" data-bs-parent="#pf">
+            <div class="accordion-body text-muted-2">Yes, until you cancel. We'll remind you before each renewal.</div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#p3">
+              Can I switch plans?
+            </button>
+          </h3>
+          <div id="p3" class="accordion-collapse collapse" data-bs-parent="#pf">
+            <div class="accordion-body text-muted-2">Any time from Settings. Upgrades start immediately.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- checkout modal -->
+<div class="modal fade" id="checkout" tabindex="-1" aria-labelledby="coTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-2">
+      <div class="modal-header border-0">
+        <h2 class="modal-title h4 fw-bold" id="coTitle">Checkout</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div
+          class="glass glass-flat p-3 mb-4 d-flex justify-content-between align-items-center"
+          style="border-radius: 18px">
+          <div>
+            <div class="fw-bold" id="coPlan">Plus</div>
+            <div class="small text-muted-2" id="coPeriod">Billed monthly</div>
+          </div>
+          <div class="h4 fw-bold mb-0" id="coPrice">₦2,500</div>
+        </div>
+        <label class="form-label">Pay with</label>
+        <div class="d-grid gap-2 mb-4">
+          <label
+            class="glass glass-flat p-3 d-flex align-items-center gap-3"
+            style="border-radius: 16px; cursor: pointer">
+            <input class="form-check-input mt-0" type="radio" name="pm" checked />
+            <i class="bi bi-credit-card fs-5 text-brand"></i>
+            Card
+          </label>
+          <label
+            class="glass glass-flat p-3 d-flex align-items-center gap-3"
+            style="border-radius: 16px; cursor: pointer">
+            <input class="form-check-input mt-0" type="radio" name="pm" />
+            <i class="bi bi-bank fs-5 text-brand"></i>
+            Bank transfer
+          </label>
+          <label
+            class="glass glass-flat p-3 d-flex align-items-center gap-3"
+            style="border-radius: 16px; cursor: pointer">
+            <input class="form-check-input mt-0" type="radio" name="pm" />
+            <i class="bi bi-phone fs-5 text-brand"></i>
+            USSD
+          </label>
+        </div>
+        <button class="btn btn-brand btn-lg w-100" id="payBtn">
+          <i class="bi bi-lock-fill me-1"></i>
+          Pay securely
+        </button>
+        <p class="small text-muted-2 text-center mt-3 mb-0">Connect Paystack / Flutterwave here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'frontend/js/premium.js' %}"></script>{% endblock %}

@@ -1,0 +1,200 @@
+/* =========================================================
+   register.html — page styles
+   ========================================================= */
+
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 30px 0;
+}
+.auth-card {
+  padding: 40px;
+}
+.auth-side {
+  position: relative;
+  min-height: 600px;
+  border-radius: 32px;
+  overflow: hidden;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: #fff;
+}
+.auth-side .bgimg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 1s ease;
+}
+.auth-side::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(30, 8, 40, 0.85) 10%, rgba(30, 8, 40, 0.1) 60%);
+}
+.auth-side > *:not(.bgimg) {
+  position: relative;
+  z-index: 2;
+}
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hair);
+}
+.top-bar {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+}
+.btn-loading .spinner-border {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-width: 0.15em;
+}
+@media (max-width: 575.98px) {
+  .auth-card {
+    padding: 26px;
+  }
+}
+.animate-shake {
+  animation: shake 0.45s;
+}
+
+.wizard-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.wizard-steps span {
+  flex: 1;
+  height: 6px;
+  border-radius: 6px;
+  background: var(--hair);
+  overflow: hidden;
+  position: relative;
+}
+.wizard-steps span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: var(--brand-grad);
+  transition: width 0.5s var(--ease);
+}
+.wizard-steps span.done::after {
+  width: 100%;
+}
+.step {
+  display: none;
+}
+.step.active {
+  display: block;
+  animation: stepIn 0.5s var(--ease) both;
+}
+
+.option-card {
+  cursor: pointer;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1.5px solid var(--hair);
+  background: var(--input-bg);
+  text-align: center;
+  transition: all 0.2s var(--ease);
+  height: 100%;
+}
+.option-card i {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 6px;
+}
+.option-card:hover {
+  border-color: var(--brand);
+}
+.btn-check:checked + .option-card {
+  border-color: var(--brand);
+  background: var(--chip);
+  color: var(--accent-text);
+  transform: translateY(-3px);
+}
+.photo-slot {
+  aspect-ratio: 3/4;
+  border-radius: 18px;
+  border: 2px dashed var(--hair);
+  background: var(--input-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: var(--muted);
+  transition: all 0.2s var(--ease);
+}
+.photo-slot:hover {
+  border-color: var(--brand);
+  color: var(--accent-text);
+}
+.photo-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-slot .remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: none;
+}
+.photo-slot.filled .remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-slot.filled {
+  border-style: solid;
+  border-color: transparent;
+}
+.success-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #fff;
+  background: var(--brand-grad);
+  box-shadow: 0 20px 50px rgba(216, 27, 96, 0.4);
+  animation: popIn 0.7s var(--ease) both;
+}

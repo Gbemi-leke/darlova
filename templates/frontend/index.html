@@ -1,0 +1,408 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block title %}Darlova — Meet someone who actually gets you{% endblock %}
+{% block description %}Verified dating for real connections.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'frontend/css/index.css' %}">{% endblock %}
+
+{% block content %}
+<!-- ================= HERO ================= -->
+<section class="hero container">
+  <div class="row align-items-center gy-5 gx-lg-5">
+    <div class="col-lg-6">
+      <span class="chip glass glass-flat mb-4 reveal">
+        <i class="bi bi-shield-check"></i>
+        Every profile is selfie-verified
+      </span>
+      <h1 class="mb-4 reveal reveal-d1">
+        Meet someone who
+        <br />
+        <span class="rotator" id="rotator"><span class="text-gradient serif-italic">gets you.</span></span>
+      </h1>
+      <p class="lead text-muted-2 mb-4 reveal reveal-d2" style="max-width: 520px">
+        Real people, matched on what matters: your values, your vibe and what you're looking for. No bots, no endless
+        small talk.
+      </p>
+      <div class="d-flex flex-wrap gap-3 mb-4 reveal reveal-d3">
+        {% if user.is_authenticated %}
+        <a href="{% url 'discover' %}" class="btn btn-brand btn-lg">
+          Open Darlova
+          <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-brand btn-lg">
+          Create free profile
+          <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+        {% endif %}
+        <a href="#how" class="btn btn-glass btn-lg">
+          <i class="bi bi-play-circle me-1"></i>
+          See how it works
+        </a>
+      </div>
+      <div class="d-flex align-items-center gap-3 small text-muted-2 reveal reveal-d3">
+        {% if showcase %}
+        <div class="d-flex">
+          {% for p in showcase|slice:":4" %}
+          <img src="{{ p.img }}" class="avatar avatar-sm border border-2" style="border-color: var(--bg) !important{% if not forloop.first %}; margin-left: -10px{% endif %}" alt="" />
+          {% endfor %}
+        </div>
+        {% endif %}
+        Free to join &middot; Takes about 2 minutes
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="hero-visual" id="heroVisual">
+        <div class="stack-card glass stack-back-1" aria-hidden="true"></div>
+        <div class="stack-card glass stack-back-2" aria-hidden="true"></div>
+        <div class="profile-card glass-strong">
+          <div class="photo">
+            {% if showcase %}{% with h=showcase.0 %}
+            <img id="heroImg" src="{{ h.img }}" alt="{{ h.first }}" />
+            <div class="photo-bars" id="heroBars">
+              {% for ph in h.photos %}<i{% if forloop.first %} class="on"{% endif %}></i>{% endfor %}
+            </div>
+            <div class="shade">
+              <div class="d-flex align-items-center gap-2 font-display fs-3 fw-bold">
+                <span id="heroName">{{ h.name }}</span>
+                <i class="bi bi-patch-check-fill" id="heroVerified" style="color: #5ec8ff{% if not h.verified %}; display: none{% endif %}" aria-label="Verified"></i>
+              </div>
+              <div class="small" id="heroJob" style="opacity: 0.92">{{ h.job }}</div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-2 px-2 pt-3" id="heroTags">
+            {% for t in h.tags %}<span class="chip">{{ t }}</span>{% endfor %}
+          </div>
+            {% endwith %}{% else %}
+            <!-- No members with photos yet: a branded placeholder instead of sample people -->
+            <div class="hero-empty">
+              <img src="{% static 'images/brand/logo-icon.png' %}" width="96" height="96" alt="" />
+              <div class="font-display fs-3 fw-bold mt-3">Your face here</div>
+              <div class="small text-muted-2">Be one of the first people on Darlova.</div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-2 px-2 pt-3" id="heroTags">
+            <span class="chip">Afrobeats</span>
+            <span class="chip">Jollof</span>
+            <span class="chip">Travel</span>
+          </div>
+            {% endif %}
+          <div class="d-flex justify-content-center align-items-center gap-3 pt-3">
+            <button class="act glass glass-flat text-muted-2" id="heroPass" aria-label="Pass">
+              <i class="bi bi-x-lg"></i>
+            </button>
+            <button class="act act-like" id="heroLike" aria-label="Like"><i class="bi bi-heart-fill"></i></button>
+            <button class="act glass glass-flat text-violet" id="heroStar" aria-label="Super like">
+              <i class="bi bi-star-fill"></i>
+            </button>
+          </div>
+        </div>
+        <div class="float-chip c1 glass-strong d-flex align-items-center gap-2" style="top: 40px; right: 0">
+          {% if showcase|length >= 2 %}
+          <div class="d-flex" id="matchPair">
+            <img src="{{ showcase.0.img }}" class="avatar avatar-sm" alt="" />
+            <img src="{{ showcase.1.img }}" class="avatar avatar-sm" style="margin-left: -12px" alt="" />
+          </div>
+          {% else %}
+          <i class="bi bi-heart-fill text-brand fs-4"></i>
+          {% endif %}
+          <div>
+            <div class="fw-bold text-brand font-display">It's a match!</div>
+            <div class="small text-muted-2">You both liked each other</div>
+          </div>
+        </div>
+        <div
+          class="float-chip c2 glass-strong d-none d-md-block"
+          style="bottom: -10px; left: -40px; max-width: 200px; border-radius: 20px 20px 20px 6px">
+          <div class="small fw-semibold text-muted-2 mb-1"><i class="bi bi-chat-heart me-1"></i>New message &middot; just now</div>
+          <div>So… party jollof or home jollof? This decides everything.</div>
+        </div>
+        <div
+          class="float-chip c3 glass-strong d-none d-sm-flex align-items-center gap-2"
+          style="bottom: 20px; right: 20px">
+          <i class="bi bi-geo-alt-fill text-brand"></i>
+          <span class="small fw-semibold">{% if online_count >= 5 %}{{ online_count }} people online now{% elif member_count >= 20 %}{{ member_count }} members and counting{% else %}New people join every day{% endif %}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INTEREST MARQUEE ================= -->
+<section class="pb-5" aria-label="Popular interests">
+  <div class="marquee"><div class="marquee-track" id="marquee"></div></div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="container py-5" id="features">
+  <div class="text-center mx-auto mb-5" style="max-width: 680px">
+    <div class="eyebrow mb-2 reveal">Why Darlova</div>
+    <h2 class="display-5 fw-bold reveal reveal-d1">Built for real connections, and real safety.</h2>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-3 reveal">
+      <div class="glass hover-lift p-4 h-100">
+        <div class="feature-icon mb-3"><i class="bi bi-shield-check"></i></div>
+        <h3 class="h5">Verified profiles</h3>
+        <p class="text-muted-2 mb-0">A quick selfie check means the face you see is the face you meet.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 reveal reveal-d1">
+      <div class="glass hover-lift p-4 h-100">
+        <div class="feature-icon mb-3" style="background: var(--chip-violet); color: var(--violet-text)">
+          <i class="bi bi-stars"></i>
+        </div>
+        <h3 class="h5">Matches that make sense</h3>
+        <p class="text-muted-2 mb-0">We match on interests, values and intentions, not just photos.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 reveal reveal-d2">
+      <div class="glass hover-lift p-4 h-100">
+        <div class="feature-icon mb-3"><i class="bi bi-chat-heart"></i></div>
+        <h3 class="h5">Chat only when it's mutual</h3>
+        <p class="text-muted-2 mb-0">Messages unlock after you both like. Report or block in one tap.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 reveal reveal-d3">
+      <div class="glass hover-lift p-4 h-100">
+        <div class="feature-icon mb-3" style="background: var(--chip-violet); color: var(--violet-text)">
+          <i class="bi bi-geo-alt"></i>
+        </div>
+        <h3 class="h5">Your city, never your address</h3>
+        <p class="text-muted-2 mb-0">Others only see which city you're in, never where you live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="container py-5" id="how">
+  <div class="glass p-4 p-lg-5">
+    <div class="row align-items-center gy-5 gx-lg-5">
+      <div class="col-lg-6">
+        <div class="eyebrow mb-2">How it works</div>
+        <h2 class="display-6 fw-bold mb-5">From hello to first date in three steps.</h2>
+        <div class="d-grid gap-4">
+          <div class="d-flex gap-4 reveal">
+            <div class="step-num text-gradient">01</div>
+            <div>
+              <h3 class="h5">Build your profile</h3>
+              <p class="text-muted-2 mb-0">
+                Add a few photos, tell people what you love and who you're hoping to meet.
+              </p>
+            </div>
+          </div>
+          <div class="d-flex gap-4 reveal reveal-d1">
+            <div class="step-num text-gradient">02</div>
+            <div>
+              <h3 class="h5">Discover &amp; like</h3>
+              <p class="text-muted-2 mb-0">Browse people picked for you. They only find out if they like you back.</p>
+            </div>
+          </div>
+          <div class="d-flex gap-4 reveal reveal-d2">
+            <div class="step-num text-gradient">03</div>
+            <div>
+              <h3 class="h5">Match &amp; meet</h3>
+              <p class="text-muted-2 mb-0">It's a match. Start chatting, hop on a video call, then plan the date.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 reveal">
+        <div class="phone glass-strong">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="p-3 pt-5">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <img src="{% static 'images/brand/logo-icon.png' %}" width="30" height="30" alt="" />
+                <span class="small fw-bold">Discover</span>
+                <i class="bi bi-sliders"></i>
+              </div>
+              <div class="position-relative rounded-4 overflow-hidden mb-3" style="height: 330px">
+                {% with ph=phone_person %}
+                <img
+                  id="phoneImg"
+                  src="{% if ph %}{{ ph.photos|last }}{% else %}{% static 'images/brand/logo-icon.png' %}{% endif %}"
+                  alt=""
+                  class="w-100 h-100"
+                  style="object-fit: {% if ph %}cover{% else %}contain; padding: 80px{% endif %}; transition: opacity 0.4s" />
+                <div
+                  class="position-absolute bottom-0 start-0 end-0 p-3 text-white"
+                  style="background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent)">
+                  <div class="fw-bold fs-5 font-display" id="phoneName">{% if ph %}{{ ph.name }}{% else %}Someone special{% endif %}</div>
+                  <div class="small" id="phoneJob">{% if ph %}{{ ph.job }}{% else %}Could be here soon{% endif %}</div>
+                </div>
+                {% endwith %}
+              </div>
+              <div class="d-flex justify-content-center gap-3">
+                <span class="act glass glass-flat text-muted-2" style="width: 48px; height: 48px; font-size: 1.1rem">
+                  <i class="bi bi-x-lg"></i>
+                </span>
+                <span class="act act-like" style="width: 56px; height: 56px; font-size: 1.3rem">
+                  <i class="bi bi-heart-fill"></i>
+                </span>
+                <span class="act glass glass-flat text-violet" style="width: 48px; height: 48px; font-size: 1.1rem">
+                  <i class="bi bi-star-fill"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MEMBERS (most liked, real profiles) ================= -->
+{% if showcase %}
+<section class="container py-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+      <div class="eyebrow mb-2"><i class="bi bi-fire me-1"></i>Most liked this month</div>
+      <h2 class="display-6 fw-bold mb-0">People you could meet this week</h2>
+    </div>
+    <a href="{% if user.is_authenticated %}{% url 'discover' %}{% else %}{% url 'register' %}{% endif %}" class="btn btn-glass">
+      {% if user.is_authenticated %}Start discovering{% else %}Join to meet them{% endif %}
+      <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+  <div class="row g-3" id="memberGrid">
+    {% for m in showcase|slice:":12" %}
+    <div class="col-6 col-md-4 col-lg-2 reveal in">
+      <a href="{% url 'profile' %}?id={{ m.id }}" class="member d-block hover-lift" aria-label="View {{ m.first }}">
+        <img src="{{ m.img }}" alt="" loading="lazy">
+        {% if m.likes %}<span class="member-likes"><i class="bi bi-heart-fill"></i> {{ m.likes }}</span>{% endif %}
+        <div class="info">
+          <div class="fw-bold">{{ m.name }}{% if m.verified %} <i class="bi bi-patch-check-fill" style="color: #5ec8ff"></i>{% endif %}</div>
+          <div class="small" style="opacity: 0.9"><i class="bi bi-geo-alt"></i> {{ m.city }}</div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ================= FAQ ================= -->
+<section class="container py-5" id="faq">
+  <div class="row gy-5 gx-lg-5">
+    <div class="col-lg-4">
+      <div class="eyebrow mb-2">FAQ</div>
+      <h2 class="display-6 fw-bold">Questions? We've got answers.</h2>
+      <p class="text-muted-2">
+        Can't find what you need?
+        <a href="{% url 'safety' %}">Visit the safety centre</a>.
+      </p>
+    </div>
+    <div class="col-lg-8">
+      <div class="accordion" id="faqAcc">
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#f1"
+              aria-expanded="true">
+              Is Darlova free to use?
+            </button>
+          </h3>
+          <div id="f1" class="accordion-collapse collapse show" data-bs-parent="#faqAcc">
+            <div class="accordion-body text-muted-2">
+              Yes. Creating a profile, matching and chatting with your matches are free. Premium adds extras like
+              unlimited likes and seeing who liked you.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f2">
+              How does verification work?
+            </button>
+          </h3>
+          <div id="f2" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+            <div class="accordion-body text-muted-2">
+              You take a quick selfie copying a pose on screen. We compare it with your profile photos, and once it
+              matches you get the blue verified badge.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f3">
+              Can people see my exact location?
+            </button>
+          </h3>
+          <div id="f3" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+            <div class="accordion-body text-muted-2">
+              Never. Other members only see your city, never your address.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f4">
+              What happens when I report someone?
+            </button>
+          </h3>
+          <div id="f4" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+            <div class="accordion-body text-muted-2">
+              Our team reviews every report. The person is never told who reported them, and you can block them straight
+              away.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f5">
+              Can I cancel Premium any time?
+            </button>
+          </h3>
+          <div id="f5" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+            <div class="accordion-body text-muted-2">
+              Yes. Cancel from Settings whenever you like and keep your benefits until the end of the billing period.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="container py-5" id="download">
+  <div class="glass-strong cta-band text-center">
+    <div class="orb" style="width: 360px; height: 360px; background: var(--orb1); top: -160px; left: -80px"></div>
+    <div class="orb" style="width: 360px; height: 360px; background: var(--orb2); bottom: -180px; right: -60px"></div>
+    <div class="position-relative">
+      <h2 class="display-5 fw-bold mx-auto mb-3" style="max-width: 700px">Your person might be one like away.</h2>
+      <p class="lead text-muted-2 mb-4">
+        {% if user.is_authenticated %}Pick up where you left off on the web, or take Darlova with you on your phone.{% else %}Join free on the
+        web, or take Darlova with you on your phone.{% endif %}
+      </p>
+      <div class="d-flex flex-wrap justify-content-center gap-3">
+        {% if user.is_authenticated %}
+        <a href="{% url 'discover' %}" class="btn btn-brand btn-lg">Open Darlova</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-brand btn-lg">Create free profile</a>
+        {% endif %}
+        <a href="#" class="btn btn-glass btn-lg" data-demo="Add your App Store link">
+          <i class="bi bi-apple me-1"></i>
+          App Store
+        </a>
+        <a href="#" class="btn btn-glass btn-lg" data-demo="Add your Google Play link">
+          <i class="bi bi-google-play me-1"></i>
+          Google Play
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Most-liked members for the hero card and phone mockup -->
+{{ showcase|json_script:"hero-people" }}
+<script src="{% static 'frontend/js/index.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% load static %}<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <title>{% block title %}Darlova{% endblock %}</title>
+  <meta name="description" content="{% block description %}Your Darlova dashboard.{% endblock %}">
+  {% include "partials/head.html" %}
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+
+  <!-- Page styles -->
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  {% include "dashboard/partials/sidebar.html" %}
+  {% include "dashboard/partials/bottom_nav.html" %}
+
+  <main class="app-main">
+    <header class="app-topbar glass">
+      <a href="{% url 'home' %}" class="d-lg-none"><img src="{% static 'images/brand/logo-icon.png' %}" alt="Darlova home" width="38" height="38"></a>
+      <div class="d-none d-md-block me-2">{% block topbar_title %}{% endblock %}</div>
+
+      <form class="search input-icon d-none d-sm-block ms-md-auto" action="{% url 'matches' %}" role="search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" class="form-control py-2" placeholder="Search your matches…" aria-label="Search your matches" value="{{ request.GET.q }}">
+      </form>
+
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        {% include "partials/theme_switch.html" %}
+        <a href="{% url 'notifications' %}" class="btn btn-glass btn-icon notif-btn" aria-label="Notifications"><i class="bi bi-bell"></i>{% if counts.unread_notifications %}<span class="pulse"></span>{% endif %}</a>
+        {% include "dashboard/partials/account_menu.html" %}
+      </div>
+    </header>
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Modals and off-canvas panels for this page -->
+  {% block modals %}{% endblock %}
+
+  {% include "partials/scripts.html" %}
+  <!-- Data from the Django view for this page -->
+  {{ page_data|default:None|json_script:"page-data" }}
+  <script src="{% static 'js/dashboard.js' %}"></script>
+
+  <!-- Page script -->
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

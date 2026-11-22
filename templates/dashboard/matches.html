@@ -1,0 +1,66 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Matches — Darlova{% endblock %}
+{% block description %}Your matches.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/matches.css' %}">{% endblock %}
+{% block topbar_title %}<div class="fw-bold font-display fs-5 lh-1">Matches</div><div class="small text-muted-2">Your connections</div>{% endblock %}
+
+{% block content %}
+<section class="glass p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h6 mb-0">New matches</h2>
+    <span class="chip" id="newChip">
+      <span id="newCount">0</span>
+      new
+    </span>
+  </div>
+  <div class="stories" id="stories"></div>
+</section>
+
+<section>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <ul class="nav nav-pills glass p-1" style="border-radius: 16px" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active" data-tab="matches" type="button">
+          Matches
+          <span class="badge rounded-pill text-bg-light ms-1" id="cMatches"></span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-tab="liked" type="button">
+          Liked you
+          <span class="badge rounded-pill text-bg-light ms-1" id="cLiked"></span>
+        </button>
+      </li>
+      <li class="nav-item"><button class="nav-link" data-tab="visitors" type="button">Visitors <span class="badge rounded-pill text-bg-light ms-1" id="cVisitors"></span></button></li>
+    </ul>
+    <div class="d-flex gap-2">
+      <div class="input-icon">
+        <i class="bi bi-search"></i>
+        <input class="form-control py-2" id="mSearch" placeholder="Search by name" aria-label="Search matches" value="{{ request.GET.q }}" />
+      </div>
+      <select class="form-select py-2 w-auto" id="mSort" aria-label="Sort">
+        <option value="recent">Recent</option>
+        <option value="compat">Best match</option>
+        <option value="online">Online first</option>
+      </select>
+    </div>
+  </div>
+  <div class="glass p-3 mb-4 d-none align-items-center gap-3" id="likedBanner" style="border-radius: 20px">
+    <i class="bi bi-gem fs-3 text-violet"></i>
+    <div class="flex-grow-1">
+      <strong id="likedTitle"></strong>
+      <div class="small text-muted-2">Keep swiping on Discover to find them, or go Premium to see them now.</div>
+    </div>
+    <a href="{% url 'premium' %}" class="btn btn-gradient">See who</a>
+  </div>
+  <div class="row g-3" id="grid"></div>
+  <div class="text-center py-5 d-none" id="noResults">
+    <i class="bi bi-search-heart fs-1 text-brand"></i>
+    <p class="text-muted-2 mt-2" id="noResultsText">No one matches that search.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/matches.js' %}"></script>{% endblock %}

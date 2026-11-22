@@ -1,0 +1,179 @@
+/* =========================================================
+   APP SHELL (logged-in pages): sidebar + topbar + bottom nav
+   ========================================================= */
+.app-sidebar {
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  width: 250px;
+  z-index: 1030;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.app-sidebar .side-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0.78rem 1rem;
+  border-radius: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s var(--ease);
+}
+.app-sidebar .side-link i {
+  font-size: 1.2rem;
+}
+.app-sidebar .side-link:hover {
+  background: var(--chip);
+  color: var(--accent-text);
+}
+.app-sidebar .side-link.active {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(216, 27, 96, 0.3);
+}
+.app-sidebar .side-link .badge {
+  margin-left: auto;
+}
+.side-premium {
+  margin-top: auto;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--brand-grad);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.side-premium::after {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  right: -40px;
+  top: -50px;
+}
+.app-main {
+  margin-left: 282px;
+  padding: 16px 20px 40px 0;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.app-topbar {
+  position: sticky;
+  top: 16px;
+  z-index: 1020;
+  padding: 10px 12px 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  border-radius: 22px;
+}
+.app-topbar .search {
+  flex: 1;
+  max-width: 420px;
+}
+.notif-btn {
+  position: relative;
+}
+.notif-btn .pulse {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 0 rgba(216, 27, 96, 0.6);
+  animation: pulse 1.8s infinite;
+}
+
+.app-bottom-nav {
+  display: none;
+}
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    display: none;
+  }
+  .app-main {
+    margin-left: 0;
+    padding: 12px 12px 110px;
+  }
+  .app-topbar {
+    top: 10px;
+  }
+  .app-bottom-nav {
+    display: flex;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 1040;
+    justify-content: space-around;
+    padding: 8px;
+    border-radius: 24px;
+  }
+  .app-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 14px;
+    position: relative;
+  }
+  .app-bottom-nav a i {
+    font-size: 1.3rem;
+  }
+  .app-bottom-nav a.active {
+    color: var(--accent-text);
+    background: var(--chip);
+  }
+  .app-bottom-nav .bn-badge {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+  .to-top {
+    bottom: 100px;
+  }
+  .toast-stack {
+    bottom: 100px;
+  }
+}
+
+/* ---------- live numbers ---------- */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  animation: liveDot 2s infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+@keyframes liveDot {
+  70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+.bump {
+  animation: statBump 0.45s var(--ease);
+}
+@keyframes statBump {
+  40% { transform: scale(1.08); }
+}

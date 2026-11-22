@@ -1,0 +1,157 @@
+/* =========================================================
+   my-profile.html — page styles
+   ========================================================= */
+
+.cover {
+  height: 180px;
+  border-radius: 28px;
+  background: var(--brand-grad);
+  position: relative;
+  overflow: hidden;
+}
+.cover::before,
+.cover::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+.cover::before {
+  width: 300px;
+  height: 300px;
+  right: -60px;
+  top: -120px;
+}
+.cover::after {
+  width: 200px;
+  height: 200px;
+  left: 20%;
+  bottom: -120px;
+}
+.me-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 36px;
+  object-fit: cover;
+  border: 5px solid var(--bg);
+  margin-top: -70px;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+.ring {
+  width: 130px;
+  height: 130px;
+  position: relative;
+}
+.ring svg {
+  transform: rotate(-90deg);
+}
+.ring .val {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.photo-slot {
+  aspect-ratio: 3/4;
+  border-radius: 18px;
+  border: 2px dashed var(--hair);
+  background: var(--input-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: var(--muted);
+  transition: all 0.2s var(--ease);
+}
+.photo-slot:hover {
+  border-color: var(--brand);
+  color: var(--accent-text);
+}
+.photo-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-slot.filled {
+  border: none;
+}
+.photo-slot .tools {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none;
+  gap: 6px;
+  z-index: 2;
+}
+.photo-slot.filled .tools {
+  display: flex;
+}
+.photo-slot .tools button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-slot .main-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  z-index: 2;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.section-title i {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--chip);
+  color: var(--accent-text);
+}
+.save-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 150%);
+  z-index: 1050;
+  padding: 10px 10px 10px 22px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.45s var(--ease);
+}
+.save-bar.show {
+  transform: translate(-50%, 0);
+}
+@media (max-width: 991.98px) {
+  .save-bar {
+    bottom: 100px;
+    width: calc(100% - 24px);
+  }
+}

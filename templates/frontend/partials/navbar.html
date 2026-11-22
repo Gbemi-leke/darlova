@@ -1,0 +1,35 @@
+{% load static %}
+<div class="nav-wrap pt-3">
+  <nav class="navbar navbar-expand-lg glass navbar-glass container" aria-label="Main">
+    <a class="navbar-brand me-4" href="{% url 'home' %}">{% include "partials/logo.html" %}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
+      <i class="bi bi-list fs-2"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto gap-lg-1 my-3 my-lg-0">
+        <li class="nav-item"><a class="nav-link" data-page="{% url 'home' %}" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#how">How it works</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="{% url 'safety' %}" href="{% url 'safety' %}">Safety</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="{% url 'premium' %}" href="{% url 'premium' %}">Premium</a></li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap pb-3 pb-lg-0">
+        {% include "partials/theme_switch.html" %}
+
+        {% if user.is_authenticated %}
+          <!-- Logged in: one button straight to the dashboard -->
+          <a href="{% url 'discover' %}" class="btn btn-glass d-flex align-items-center gap-2 py-1 ps-1 pe-3">
+            <img src="{{ user.avatar_url }}" alt="" class="avatar avatar-sm">
+            <span>Account</span>
+            <i class="bi bi-arrow-right small"></i>
+          </a>
+        {% else %}
+          <!-- Logged out -->
+          <a href="{% url 'login' %}" class="btn btn-glass" data-page="{% url 'login' %}">Log in</a>
+          <a href="{% url 'register' %}" class="btn btn-brand">Join free</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</div>

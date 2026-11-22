@@ -1,0 +1,25 @@
+{% load static %}<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <title>{% block title %}Darlova — Real people. Real dates.{% endblock %}</title>
+  <meta name="description" content="{% block description %}Verified dating for real connections.{% endblock %}">
+  {% include "partials/head.html" %}
+
+  <!-- Page styles -->
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  {% block navbar %}{% include "frontend/partials/navbar.html" %}{% endblock %}
+
+  {% block content %}{% endblock %}
+
+  {% block footer %}{% include "frontend/partials/footer.html" %}{% endblock %}
+
+  {% include "partials/scripts.html" %}
+
+  <!-- Page script -->
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

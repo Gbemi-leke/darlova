@@ -1,0 +1,220 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}My profile — Darlova{% endblock %}
+{% block description %}Edit your profile.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/my-profile.css' %}">{% endblock %}
+{% block topbar_title %}<div class="fw-bold font-display fs-5 lh-1">My profile</div><div class="small text-muted-2">How others see you</div>{% endblock %}
+
+{% block content %}
+<div class="cover mb-0 reveal"></div>
+<div class="glass p-4 mb-4 reveal" style="margin-top: -30px; position: relative">
+  <div class="d-flex flex-wrap align-items-end gap-4">
+    <img src="{{ user.avatar_url }}" class="me-avatar" id="meAvatar" alt="Your main photo" />
+    <div class="flex-grow-1">
+      <h1 class="h2 fw-bold mb-1 d-flex align-items-center gap-2">
+        <span>
+          <span id="meName">{{ user.display_name }}</span>, {{ p.age }}
+        </span>
+        {% if p.is_verified %}<i class="bi bi-patch-check-fill fs-4" style="color: #0ea5e9" aria-label="Verified"></i>{% endif %}
+      </h1>
+      <div class="text-muted-2">
+        <i class="bi bi-geo-alt"></i>
+        <span id="meCity">{{ p.city }}</span> &middot; Member since {{ user.date_joined|date:"F Y" }}
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-brand" id="saveTop">
+        <i class="bi bi-check2 me-1"></i>
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8 d-grid gap-4">
+    <section class="glass p-4 reveal">
+      <div class="section-title">
+        <i class="bi bi-images"></i>
+        <h2 class="h5 mb-0">Photos</h2>
+        <span class="small text-muted-2 ms-auto">Up to 6 · tap the star to make one your main photo</span>
+      </div>
+      <div class="row g-2" id="photos"></div>
+      <input type="file" id="pInput" accept="image/jpeg,image/png,image/webp,image/heic" hidden />
+    </section>
+
+    <section class="glass p-4 reveal">
+      <div class="section-title">
+        <i class="bi bi-person-lines-fill"></i>
+        <h2 class="h5 mb-0">About you</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label" for="eName">First name</label>
+          <input class="form-control track" id="eName" maxlength="40" value="{{ user.first_name }}" />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="eJob">Job title</label>
+          <input class="form-control track" id="eJob" maxlength="80" value="{{ p.job_title }}" placeholder="e.g. Software engineer" />
+        </div>
+        <div class="col-12">
+          <label class="form-label d-flex justify-content-between" for="eBio">
+            Bio
+            <span class="small text-muted-2">
+              <span id="bioCount">0</span>/300
+            </span>
+          </label>
+          <textarea class="form-control track" id="eBio" rows="3" maxlength="300" placeholder="A few lines about you: what you love, what makes you laugh…">{{ p.bio }}</textarea>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="eLook">Looking for</label>
+          <select class="form-select track" id="eLook">
+            <option value="">Prefer not to say</option>
+            {% for value, label in looking_choices %}<option value="{{ value }}"{% if p.looking_for == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="eCity">City</label>
+          <select class="form-select track" id="eCity">
+            {% for value, label in cities %}<option value="{{ value }}"{% if p.city == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="eHeight">Height</label>
+          <select class="form-select track" id="eHeight">
+            <option value="">Prefer not to say</option>
+            {% for h in height_choices %}<option value="{{ h }}"{% if p.height == h %} selected{% endif %}>{{ h }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="eEdu">Education</label>
+          <input class="form-control track" id="eEdu" maxlength="100" value="{{ p.education }}" placeholder="e.g. University of Lagos" />
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="eLang">Languages</label>
+          <input class="form-control track" id="eLang" maxlength="100" value="{{ p.languages }}" placeholder="e.g. English, Yoruba" />
+        </div>
+      </div>
+    </section>
+
+    <section class="glass p-4 reveal">
+      <div class="section-title">
+        <i class="bi bi-heart"></i>
+        <h2 class="h5 mb-0">Interests</h2>
+        <span class="chip ms-auto">
+          <span id="iCount">0</span>/8
+        </span>
+      </div>
+      <div class="d-flex flex-wrap gap-2" id="eInterests"></div>
+    </section>
+
+    <section class="glass p-4 reveal">
+      <div class="section-title">
+        <i class="bi bi-chat-quote"></i>
+        <h2 class="h5 mb-0">Prompts</h2>
+        <span class="small text-muted-2 ms-auto">Great conversation starters</span>
+      </div>
+      <div class="d-grid gap-3">
+        <div>
+          <select class="form-select mb-2 track" id="eP1q" aria-label="Prompt 1">
+            <option value="">Choose a prompt…</option>
+            {% for q in prompt_choices %}<option{% if p.prompt1_q == q %} selected{% endif %}>{{ q }}</option>{% endfor %}
+          </select>
+          <textarea class="form-control track" id="eP1a" rows="2" maxlength="200" aria-label="Answer 1" placeholder="Your answer">{{ p.prompt1_a }}</textarea>
+        </div>
+        <div>
+          <select class="form-select mb-2 track" id="eP2q" aria-label="Prompt 2">
+            <option value="">Choose a prompt…</option>
+            {% for q in prompt_choices %}<option{% if p.prompt2_q == q %} selected{% endif %}>{{ q }}</option>{% endfor %}
+          </select>
+          <textarea class="form-control track" id="eP2a" rows="2" maxlength="200" aria-label="Answer 2" placeholder="Your answer">{{ p.prompt2_a }}</textarea>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="d-grid gap-4" style="position: sticky; top: 100px">
+      <section class="glass p-4 text-center reveal">
+        <h2 class="h6 mb-3">Profile strength</h2>
+        <div class="ring mx-auto mb-3">
+          <svg width="130" height="130" viewBox="0 0 130 130" aria-hidden="true">
+            <defs>
+              <linearGradient id="rg" x1="0" x2="1">
+                <stop offset="0" stop-color="#E91E63" />
+                <stop offset="1" stop-color="#7C3AED" />
+              </linearGradient>
+            </defs>
+            <circle cx="65" cy="65" r="56" fill="none" stroke="var(--hair)" stroke-width="12" />
+            <circle
+              id="ringArc"
+              cx="65"
+              cy="65"
+              r="56"
+              fill="none"
+              stroke="url(#rg)"
+              stroke-width="12"
+              stroke-linecap="round"
+              stroke-dasharray="351.86"
+              stroke-dashoffset="351.86"
+              style="transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1)" />
+          </svg>
+          <div class="val">
+            <strong class="fs-2 font-display" id="ringVal">0%</strong>
+            <span class="small text-muted-2">complete</span>
+          </div>
+        </div>
+        <ul class="list-unstyled text-start small d-grid gap-2 mb-0" id="checklist"></ul>
+      </section>
+      <section class="glass p-4 reveal">
+        <div class="d-flex align-items-center gap-3">
+          {% if p.is_verified %}
+          <i class="bi bi-patch-check-fill fs-2" style="color: #0ea5e9"></i>
+          <div>
+            <strong>You're verified</strong>
+            <div class="small text-muted-2">Your blue badge builds trust.</div>
+          </div>
+          {% else %}
+          <i class="bi bi-patch-question fs-2 text-muted-2"></i>
+          <div>
+            <strong>Not verified yet</strong>
+            <div class="small text-muted-2">Our team checks new profiles. Clear photos of your face get verified faster.</div>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+      <section class="glass p-4 reveal">
+        <h2 class="h6 d-flex align-items-center gap-2">Your last 7 days <span class="live-dot ms-auto" title="Live"></span></h2>
+        <div class="row text-center g-2 mt-1">
+          <div class="col-4">
+            <div class="h4 fw-bold text-brand mb-0" data-stat="views_7d">{{ stats.views_7d }}</div>
+            <div class="small text-muted-2">Views</div>
+          </div>
+          <div class="col-4">
+            <div class="h4 fw-bold text-violet mb-0" data-stat="likes_7d">{{ stats.likes_7d }}</div>
+            <div class="small text-muted-2">Likes</div>
+          </div>
+          <div class="col-4">
+            <div class="h4 fw-bold mb-0" data-stat="matches_7d">{{ stats.matches_7d }}</div>
+            <div class="small text-muted-2">Matches</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div class="save-bar glass-strong" id="saveBar" role="status">
+  <span class="fw-semibold">
+    <i class="bi bi-pencil-square text-brand me-1"></i>
+    You have unsaved changes
+  </span>
+  <button class="btn btn-glass btn-sm" id="discard">Discard</button>
+  <button class="btn btn-brand btn-sm" id="saveBtn">Save changes</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/my-profile.js' %}"></script>{% endblock %}

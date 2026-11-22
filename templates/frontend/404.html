@@ -1,0 +1,32 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block title %}Page not found — Darlova{% endblock %}
+{% block description %}Page not found.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'frontend/css/404.css' %}">{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<main class="nf">
+  <div class="glass-strong p-4 p-md-5" style="max-width: 620px">
+    <div class="big">
+      <span class="text-gradient">4</span>
+      <i class="bi bi-heartbreak-fill h"></i>
+      <span class="text-gradient">4</span>
+    </div>
+    <h1 class="h2 fw-bold mt-3">This page swiped left.</h1>
+    <p class="text-muted-2 mb-4">
+      The page you're looking for doesn't exist or has moved. Let's get you back to someone who's actually interested.
+    </p>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <a href="{% url 'home' %}" class="btn btn-brand btn-lg">
+        <i class="bi bi-house me-1"></i>
+        Go home
+      </a>
+      <a href="{% url 'discover' %}" class="btn btn-glass btn-lg">Discover people</a>
+    </div>
+    <div class="mt-4">{% include "partials/theme_switch.html" %}</div>
+  </div>
+</main>
+{% endblock %}

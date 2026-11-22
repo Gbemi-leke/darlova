@@ -1,0 +1,385 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Settings — Darlova{% endblock %}
+{% block description %}Account settings.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/settings.css' %}">{% endblock %}
+{% block topbar_title %}<div class="fw-bold font-display fs-5 lh-1">Settings</div><div class="small text-muted-2">Account & preferences</div>{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-3 d-none d-lg-block">
+    <nav class="glass p-2 set-nav nav nav-pills flex-column" id="setNav" aria-label="Settings sections">
+      <a class="nav-link active" href="#account">
+        <i class="bi bi-person"></i>
+        Account
+      </a>
+      <a class="nav-link" href="#appearance">
+        <i class="bi bi-palette"></i>
+        Appearance
+      </a>
+      <a class="nav-link" href="#discovery">
+        <i class="bi bi-compass"></i>
+        Discovery
+      </a>
+      <a class="nav-link" href="#notifications">
+        <i class="bi bi-bell"></i>
+        Notifications
+      </a>
+      <a class="nav-link" href="#privacy">
+        <i class="bi bi-shield-lock"></i>
+        Privacy & safety
+      </a>
+      <a class="nav-link" href="#security">
+        <i class="bi bi-key"></i>
+        Security
+      </a>
+      <a class="nav-link" href="#subscription">
+        <i class="bi bi-gem"></i>
+        Subscription
+      </a>
+      <a class="nav-link text-danger" href="#danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        Delete account
+      </a>
+    </nav>
+  </div>
+  <div class="col-lg-9 d-grid gap-4">
+    <section class="glass p-4 p-lg-5" id="account">
+      <h2 class="h4 fw-bold mb-4">Account</h2>
+      <form class="row g-3" id="accForm">
+        <div class="col-sm-6">
+          <label class="form-label" for="sEmail">Email</label>
+          <input type="email" class="form-control" id="sEmail" value="{{ user.email }}" required />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="sPhone">Phone</label>
+          <input class="form-control" id="sPhone" value="{{ user.phone|default:'' }}" placeholder="0801 234 5678" inputmode="tel" />
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label" for="sCity">City</label>
+          <select class="form-select" id="sCity">
+            {% for value, label in cities %}<option value="{{ value }}"{% if p.city == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-12"><button class="btn btn-brand">Save account</button></div>
+      </form>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="appearance">
+      <h2 class="h4 fw-bold mb-1">Appearance</h2>
+      <p class="text-muted-2 mb-4">
+        Currently:
+        <strong class="theme-label"></strong>
+      </p>
+      <div class="row g-3">
+        <div class="col-sm-4">
+          <input type="radio" class="btn-check" name="themeR" id="tLight" value="light" data-theme-radio />
+          <label class="theme-card" for="tLight">
+            <div class="theme-prev tp-light">
+              <i></i>
+              <i></i>
+              <i style="width: 70%"></i>
+            </div>
+            <div class="fw-semibold mt-2 px-1">
+              <i class="bi bi-sun me-1"></i>
+              Light
+            </div>
+          </label>
+        </div>
+        <div class="col-sm-4">
+          <input type="radio" class="btn-check" name="themeR" id="tDark" value="dark" data-theme-radio />
+          <label class="theme-card" for="tDark">
+            <div class="theme-prev tp-dark">
+              <i></i>
+              <i></i>
+              <i style="width: 70%"></i>
+            </div>
+            <div class="fw-semibold mt-2 px-1">
+              <i class="bi bi-moon-stars me-1"></i>
+              Dark
+            </div>
+          </label>
+        </div>
+        <div class="col-sm-4">
+          <input type="radio" class="btn-check" name="themeR" id="tSys" value="system" data-theme-radio />
+          <label class="theme-card" for="tSys">
+            <div class="theme-prev tp-sys">
+              <i></i>
+              <i></i>
+              <i style="width: 70%"></i>
+            </div>
+            <div class="fw-semibold mt-2 px-1">
+              <i class="bi bi-display me-1"></i>
+              System
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="set-row mt-3">
+        <div>
+          <strong>Reduce motion</strong>
+          <div class="small text-muted-2">Turn off floating and sliding animations.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" id="reduceMotion" aria-label="Reduce motion" />
+        </div>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="discovery">
+      <h2 class="h4 fw-bold mb-4">Discovery</h2>
+      <p class="text-muted-2 mb-4">
+        You're shown <strong>{{ p.get_show_me_display|lower }}</strong>.
+      </p>
+      <label class="form-label d-flex justify-content-between">
+        Age range
+        <span class="text-brand" id="dAgeOut">{{ p.age_min }} – {{ p.age_max }}</span>
+      </label>
+      <div class="d-flex gap-3 mb-3">
+        <input type="range" class="form-range" id="dMin" min="18" max="70" value="{{ p.age_min }}" aria-label="Minimum age" />
+        <input type="range" class="form-range" id="dMax" min="18" max="70" value="{{ p.age_max }}" aria-label="Maximum age" />
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Show me on Darlova</strong>
+          <div class="small text-muted-2">Turn off to pause your profile. Matches can still chat.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="is_visible"{% if p.is_visible %} checked{% endif %} aria-label="Show me on Darlova" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Global mode</strong>
+          <div class="small text-muted-2">See people outside {{ p.city }}.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="global_mode"{% if p.global_mode %} checked{% endif %} aria-label="Global mode" />
+        </div>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="notifications">
+      <h2 class="h4 fw-bold mb-3">Notifications</h2>
+      <div class="set-row">
+        <div>
+          <strong>New matches</strong>
+          <div class="small text-muted-2">When someone likes you back.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="notify_matches"{% if p.notify_matches %} checked{% endif %} aria-label="New matches" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Messages</strong>
+          <div class="small text-muted-2">When a match sends you a message.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="notify_messages"{% if p.notify_messages %} checked{% endif %} aria-label="Messages" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Likes</strong>
+          <div class="small text-muted-2">When someone new likes you.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="notify_likes"{% if p.notify_likes %} checked{% endif %} aria-label="Likes" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Email updates</strong>
+          <div class="small text-muted-2">Tips, news and offers.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="email_updates"{% if p.email_updates %} checked{% endif %} aria-label="Email updates" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Browser push</strong>
+          <div class="small text-muted-2">Get alerts even when the tab is closed.</div>
+        </div>
+        <button class="btn btn-glass btn-sm" id="pushBtn">Enable</button>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="privacy">
+      <h2 class="h4 fw-bold mb-3">Privacy & safety</h2>
+      <div class="set-row">
+        <div>
+          <strong>Show online status</strong>
+          <div class="small text-muted-2">Let matches see when you're active.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="show_online"{% if p.show_online %} checked{% endif %} aria-label="Show online status" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Read receipts</strong>
+          <div class="small text-muted-2">Show when you've read messages.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="read_receipts"{% if p.read_receipts %} checked{% endif %} aria-label="Read receipts" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>
+            Incognito mode
+            <span class="chip chip-violet ms-1 py-0">Premium</span>
+          </strong>
+          <div class="small text-muted-2">Only people you like can see you.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" id="incog" aria-label="Incognito mode" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Show me on the Darlova homepage</strong>
+          <div class="small text-muted-2">Your first name, age, city and main photo may appear on darlova.com.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input sw" type="checkbox" data-pref="feature_on_home"{% if p.feature_on_home %} checked{% endif %} aria-label="Show me on the homepage" />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Blocked members</strong>
+          <div class="small text-muted-2" id="blockedCount">{% if blocked %}{{ blocked|length }} blocked{% else %}No one blocked{% endif %}</div>
+        </div>
+        <button class="btn btn-glass btn-sm" data-bs-toggle="modal" data-bs-target="#blockedModal"{% if not blocked %} disabled{% endif %}>Manage</button>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="security">
+      <h2 class="h4 fw-bold mb-3">Security</h2>
+      <div class="set-row">
+        <div>
+          <strong>Password</strong>
+          <div class="small text-muted-2">Use 8+ characters that aren't easy to guess.</div>
+        </div>
+        <button class="btn btn-glass btn-sm" data-bs-toggle="collapse" data-bs-target="#pwBox">Change</button>
+      </div>
+      <div class="collapse" id="pwBox">
+        <form class="row g-3 py-3" id="pwForm">
+          <div class="col-md-4">
+            <input
+              type="password"
+              class="form-control"
+              name="current"
+              placeholder="Current password"
+              aria-label="Current password"
+              autocomplete="current-password"
+              required />
+          </div>
+          <div class="col-md-4">
+            <input
+              type="password"
+              class="form-control"
+              name="new"
+              placeholder="New password"
+              aria-label="New password"
+              autocomplete="new-password"
+              minlength="8"
+              required />
+          </div>
+          <div class="col-md-4"><button class="btn btn-brand w-100">Update password</button></div>
+        </form>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Two-factor authentication <span class="chip ms-1 py-0">Coming soon</span></strong>
+          <div class="small text-muted-2">Add a code from SMS when you log in.</div>
+        </div>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" id="twofa" aria-label="Two-factor authentication" disabled />
+        </div>
+      </div>
+      <div class="set-row">
+        <div>
+          <strong>Other devices</strong>
+          <div class="small text-muted-2">Log out everywhere except this device.</div>
+        </div>
+        <button class="btn btn-glass btn-sm" id="signoutOthers">Sign out others</button>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5" id="subscription">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <h2 class="h4 fw-bold mb-1">Subscription</h2>
+          <p class="text-muted-2 mb-0">
+            You're on the
+            <strong>Free</strong>
+            plan.
+          </p>
+        </div>
+        <a href="{% url 'premium' %}" class="btn btn-gradient">
+          <i class="bi bi-gem me-1"></i>
+          Upgrade
+        </a>
+      </div>
+    </section>
+
+    <section class="glass p-4 p-lg-5 danger-zone" id="danger">
+      <h2 class="h4 fw-bold text-danger mb-1">Delete account</h2>
+      <p class="text-muted-2">This permanently removes your profile, matches and messages. This can't be undone.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-glass" id="pauseBtn">{% if p.is_visible %}Pause instead{% else %}Profile paused · Resume{% endif %}</button>
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delModal">Delete my account</button>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-body">
+        <h2 class="h4 fw-bold" id="delTitle">Are you sure?</h2>
+        <p class="text-muted-2">
+          Type
+          <strong>DELETE</strong>
+          to confirm.
+        </p>
+        <input class="form-control mb-2" id="delInput" aria-label="Type DELETE to confirm" autocomplete="off" />
+        <input type="password" class="form-control mb-3" id="delPass" placeholder="Your password" aria-label="Your password" autocomplete="current-password" />
+        <div class="d-flex gap-2 justify-content-end">
+          <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger" id="delBtn" disabled>Delete forever</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="blockedModal" tabindex="-1" aria-labelledby="blockedTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content p-3">
+      <div class="modal-header border-0">
+        <h2 class="h5 fw-bold mb-0" id="blockedTitle">Blocked members</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-grid gap-2" id="blockedList">
+        {% for b in blocked %}
+        <div class="d-flex align-items-center gap-3" data-user="{{ b.id }}">
+          <img src="{{ b.img }}" class="avatar avatar-md" alt="">
+          <strong class="flex-grow-1">{{ b.name }}</strong>
+          <button class="btn btn-glass btn-sm unblock">Unblock</button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/settings.js' %}"></script>{% endblock %}

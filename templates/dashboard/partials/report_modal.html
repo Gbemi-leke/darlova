@@ -1,0 +1,28 @@
+{% comment %} Report a member. The page script sets data-user on #reportModal before it opens. {% endcomment %}
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content p-3" id="reportForm">
+      <div class="modal-body">
+        <h2 class="h4 fw-bold" id="reportTitle"><i class="bi bi-flag text-danger me-1"></i> Report <span class="report-name"></span></h2>
+        <p class="text-muted-2 small">Our team reviews every report. They won't know it was you.</p>
+        <div class="d-grid gap-2 mb-3">
+          {% for value, label in report_reasons %}
+          <label class="glass glass-flat p-3 d-flex gap-2 align-items-center" style="border-radius: 14px; cursor: pointer">
+            <input class="form-check-input m-0" type="radio" name="reason" value="{{ value }}" required>
+            <span>{{ label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <textarea class="form-control mb-3" name="details" rows="3" maxlength="1000" placeholder="Anything else we should know? (optional)"></textarea>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" name="block" id="reportBlock" checked>
+          <label class="form-check-label" for="reportBlock">Also block them</label>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+          <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger">Send report</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

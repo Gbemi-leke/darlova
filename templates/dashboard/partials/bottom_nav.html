@@ -1,0 +1,8 @@
+<!-- Bottom menu: shown on phones and tablets instead of the sidebar -->
+<nav class="app-bottom-nav glass-strong" aria-label="App menu">
+  <a data-page="{% url 'discover' %}" href="{% url 'discover' %}"><i class="bi bi-fire"></i>Discover</a>
+  <a data-page="{% url 'matches' %}" href="{% url 'matches' %}"><i class="bi bi-heart"></i>Matches<span class="bn-badge" data-count-dot="new_matches"{% if not counts.new_matches %} hidden{% endif %}></span></a>
+  <a data-page="{% url 'messages' %}" href="{% url 'messages' %}"><i class="bi bi-chat-heart"></i>Chats<span class="bn-badge" data-count-dot="unread_messages"{% if not counts.unread_messages %} hidden{% endif %}></span></a>
+  <a data-page="{% url 'my_profile' %}" href="{% url 'my_profile' %}"><i class="bi bi-person"></i>Profile</a>
+  <a data-page="{% url 'settings' %}" href="{% url 'settings' %}"><i class="bi bi-gear"></i>Settings</a>
+</nav>

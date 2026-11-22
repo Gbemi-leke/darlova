@@ -1,0 +1,16 @@
+<aside class="app-sidebar glass" aria-label="App menu">
+  <a href="{% url 'home' %}" class="mb-4 ps-2">{% include "partials/logo.html" %}</a>
+
+  <a class="side-link" data-page="{% url 'discover' %}" href="{% url 'discover' %}"><i class="bi bi-fire"></i>Discover</a>
+  <a class="side-link" data-page="{% url 'matches' %}" href="{% url 'matches' %}"><i class="bi bi-heart"></i>Matches<span class="badge rounded-pill text-bg-light" data-count="new_matches"{% if not counts.new_matches %} hidden{% endif %}>{{ counts.new_matches }}</span></a>
+  <a class="side-link" data-page="{% url 'messages' %}" href="{% url 'messages' %}"><i class="bi bi-chat-heart"></i>Messages<span class="badge rounded-pill" style="background: var(--brand)" data-count="unread_messages"{% if not counts.unread_messages %} hidden{% endif %}>{{ counts.unread_messages }}</span></a>
+  <a class="side-link" data-page="{% url 'notifications' %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i>Notifications<span class="badge rounded-pill text-bg-light" data-count="unread_notifications"{% if not counts.unread_notifications %} hidden{% endif %}>{{ counts.unread_notifications }}</span></a>
+  <a class="side-link" data-page="{% url 'my_profile' %}" href="{% url 'my_profile' %}"><i class="bi bi-person"></i>My profile</a>
+  <a class="side-link" data-page="{% url 'settings' %}" href="{% url 'settings' %}"><i class="bi bi-gear"></i>Settings</a>
+
+  <div class="side-premium mt-auto">
+    <div class="fw-bold font-display fs-5 mb-1"><i class="bi bi-gem me-1"></i> Go Premium</div>
+    <div class="small mb-3" style="opacity: 0.92">See who likes you and get unlimited likes.</div>
+    <a href="{% url 'premium' %}" class="btn btn-light btn-sm fw-bold" style="color: #b0124c">Upgrade</a>
+  </div>
+</aside>

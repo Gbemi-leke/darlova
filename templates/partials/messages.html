@@ -1,0 +1,12 @@
+{% comment %}
+  Shows Django messages (messages.success / error / info) as the glass toasts from main.js.
+{% endcomment %}
+{% if messages %}
+<script>
+  window.addEventListener('load', function () {
+    {% for message in messages %}
+    showToast("{{ message|escapejs }}", "{% if message.tags == 'error' %}exclamation-circle-fill{% elif message.tags == 'success' %}check-circle-fill{% elif message.tags == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %}");
+    {% endfor %}
+  });
+</script>
+{% endif %}

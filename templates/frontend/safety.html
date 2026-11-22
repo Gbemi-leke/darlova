@@ -1,0 +1,185 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block title %}Safety centre — Darlova{% endblock %}
+{% block description %}Dating safety tips and reporting.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'frontend/css/safety.css' %}">{% endblock %}
+
+{% block content %}
+<main class="container">
+  <section class="hero-safe row align-items-center gy-5 gx-lg-5">
+    <div class="col-lg-7">
+      <div class="eyebrow mb-2 reveal">Safety centre</div>
+      <h1 class="display-4 fw-bold mb-3 reveal reveal-d1">Date with confidence.</h1>
+      <p class="lead text-muted-2 mb-4 reveal reveal-d2">
+        Your safety comes first. Here's how we protect you, and how you can protect yourself online and on dates.
+      </p>
+      <div class="d-flex flex-wrap gap-2 reveal reveal-d3">
+        <a href="#tips" class="btn btn-brand btn-lg">Read safety tips</a>
+        <a href="#report" class="btn btn-glass btn-lg">
+          <i class="bi bi-flag me-1"></i>
+          Report someone
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-5 text-center reveal">
+      <div class="shield"><i class="bi bi-shield-fill-check"></i></div>
+    </div>
+  </section>
+
+  <section class="py-4" id="tips">
+    <h2 class="display-6 fw-bold mb-4">Before and during your date</h2>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="glass tip hover-lift">
+          <div class="num">1</div>
+          <h3 class="h5">Keep chats on the app</h3>
+          <p class="text-muted-2 mb-0">
+            Get to know someone here first. Moving to WhatsApp too quickly makes it harder to report them.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-d1">
+        <div class="glass tip hover-lift">
+          <div class="num">2</div>
+          <h3 class="h5">Video call first</h3>
+          <p class="text-muted-2 mb-0">A quick video call confirms they're the person in the photos before you meet.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-d2">
+        <div class="glass tip hover-lift">
+          <div class="num">3</div>
+          <h3 class="h5">Meet in public</h3>
+          <p class="text-muted-2 mb-0">
+            Choose a busy café, mall or restaurant. Never meet at their home or yours on a first date.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="glass tip hover-lift">
+          <div class="num">4</div>
+          <h3 class="h5">Tell a friend</h3>
+          <p class="text-muted-2 mb-0">Share who you're meeting, where and when. Send your live location if you can.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-d1">
+        <div class="glass tip hover-lift">
+          <div class="num">5</div>
+          <h3 class="h5">Arrange your own transport</h3>
+          <p class="text-muted-2 mb-0">Get there and back on your own, so you can leave whenever you want.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal reveal-d2">
+        <div class="glass tip hover-lift">
+          <div class="num">6</div>
+          <h3 class="h5">Trust your gut</h3>
+          <p class="text-muted-2 mb-0">
+            If something feels off, it's fine to leave. You don't owe anyone an explanation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="row gy-5 gx-lg-5 align-items-center">
+      <div class="col-lg-5">
+        <div class="eyebrow mb-2">Watch out</div>
+        <h2 class="display-6 fw-bold">Red flags of a romance scam</h2>
+        <p class="text-muted-2">Scammers follow a script. If you see these, stop and report.</p>
+      </div>
+      <div class="col-lg-7 d-grid gap-3">
+        <div class="glass redflag reveal">
+          <i class="bi bi-cash-coin fs-4 text-brand"></i>
+          <div>
+            <strong>Asks for money or gift cards</strong>
+            <div class="small text-muted-2">
+              Whatever the story — emergency, flight, school fees — never send money to someone you haven't met.
+            </div>
+          </div>
+        </div>
+        <div class="glass redflag reveal reveal-d1">
+          <i class="bi bi-camera-video-off fs-4 text-brand"></i>
+          <div>
+            <strong>Always avoids video calls</strong>
+            <div class="small text-muted-2">
+              Constant excuses about a broken camera or bad network are a classic sign.
+            </div>
+          </div>
+        </div>
+        <div class="glass redflag reveal reveal-d2">
+          <i class="bi bi-graph-up-arrow fs-4 text-brand"></i>
+          <div>
+            <strong>Pushes "investment" opportunities</strong>
+            <div class="small text-muted-2">Crypto or forex tips from a match are almost always a scam.</div>
+          </div>
+        </div>
+        <div class="glass redflag reveal reveal-d3">
+          <i class="bi bi-lightning fs-4 text-brand"></i>
+          <div>
+            <strong>Falls in love too fast</strong>
+            <div class="small text-muted-2">Intense declarations within days, then a sudden crisis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5" id="report">
+    <div class="glass-strong p-4 p-lg-5 reveal">
+      <div class="row gy-5 gx-lg-5">
+        <div class="col-lg-5">
+          <h2 class="display-6 fw-bold">Report a member</h2>
+          <p class="text-muted-2">
+            Reports are confidential. Our team reviews every one, and the person is never told who reported them.
+          </p>
+          <div class="glass glass-flat p-3 d-flex gap-3 align-items-center mt-4" style="border-radius: 18px">
+            <i class="bi bi-telephone-fill fs-4 text-brand"></i>
+            <div class="small">
+              In immediate danger? Call the emergency number
+              <strong>112</strong>.
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <form id="reportForm" novalidate>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label" for="rpUser">Their name or profile link</label>
+                <input class="form-control" id="rpUser" required />
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="rpReason">Reason</label>
+                <select class="form-select" id="rpReason" required>
+                  <option value="">Choose…</option>
+                  <option>Scam or asking for money</option>
+                  <option>Fake profile</option>
+                  <option>Harassment</option>
+                  <option>Inappropriate photos</option>
+                  <option>Underage</option>
+                  <option>Something else</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="rpMsg">What happened?</label>
+                <textarea
+                  class="form-control"
+                  id="rpMsg"
+                  rows="4"
+                  maxlength="500"
+                  placeholder="Share as much detail as you can"></textarea>
+                <div class="small text-muted-2 text-end mt-1">
+                  <span id="rpCount">0</span>/500
+                </div>
+              </div>
+              <div class="col-12"><button class="btn btn-brand btn-lg">Submit report</button></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'frontend/js/safety.js' %}"></script>{% endblock %}

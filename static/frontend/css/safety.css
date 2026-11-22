@@ -1,0 +1,48 @@
+/* =========================================================
+   safety.html — page styles
+   ========================================================= */
+
+.tip {
+  padding: 28px;
+  height: 100%;
+}
+.tip .num {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: var(--font-display);
+  background: var(--brand-grad);
+  color: #fff;
+  margin-bottom: 16px;
+}
+.hero-safe {
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+.shield {
+  width: 220px;
+  height: 220px;
+  border-radius: 60px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  color: #fff;
+  background: var(--brand-grad);
+  box-shadow: 0 30px 80px rgba(216, 27, 96, 0.4);
+  animation: float 6s ease-in-out infinite;
+}
+
+.redflag {
+  border-left: none;
+  padding: 18px 20px;
+  border-radius: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}

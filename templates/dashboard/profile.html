@@ -1,0 +1,125 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}{{ member.display_name }} — Darlova{% endblock %}
+{% block description %}View profile.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/profile.css' %}">{% endblock %}
+{% block topbar_title %}<a href="javascript:history.length > 1 ? history.back() : location.assign('{% url 'discover' %}')" class="btn btn-glass btn-sm"><i class="bi bi-arrow-left"></i> Back</a>{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="sticky-side">
+      <div class="gallery glass-strong p-2 reveal">
+        <div id="gal" class="carousel slide" data-bs-touch="true">
+          <div class="carousel-indicators" id="galInd"></div>
+          <div class="carousel-inner rounded-4" id="galInner"></div>
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#gal"
+            data-bs-slide="prev"
+            aria-label="Previous photo">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#gal"
+            data-bs-slide="next"
+            aria-label="Next photo">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+        <div class="p-actions" id="pActions">
+          <button class="act" style="color: #f43f5e" id="pPass" aria-label="Pass"><i class="bi bi-x-lg"></i></button>
+          <button class="act act-like" id="pLike" aria-label="Like"><i class="bi bi-heart-fill"></i></button>
+          <button class="act" style="color: #0ea5e9" id="pSuper" aria-label="Super like">
+            <i class="bi bi-star-fill"></i>
+          </button>
+        </div>
+        <div class="p-actions" id="pMatched" hidden>
+          <a class="btn btn-brand btn-lg px-4" id="pMessage" href="#"><i class="bi bi-chat-heart-fill me-1"></i> Message</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <section class="glass p-4 p-lg-5 mb-4 reveal">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <div>
+          <h1
+            class="profile-name fw-bold mb-1 d-flex align-items-center gap-2"
+            style="font-size: clamp(1.9rem, 3vw, 2.6rem)">
+            <span id="pName"></span>
+            <i class="bi bi-patch-check-fill fs-3" id="pVerified" style="color: #0ea5e9" aria-label="Verified"></i>
+          </h1>
+          <div class="text-muted-2 mb-2">
+            <i class="bi bi-briefcase me-1"></i>
+            <span id="pJob"></span>
+            &middot;
+            <i class="bi bi-geo-alt me-1"></i>
+            <span id="pCity"></span>
+          </div>
+          <div id="pOnline"></div>
+        </div>
+        <div class="compat" id="compat" style="--p: 0">
+          <strong class="fs-3 font-display" id="compatNum">0%</strong>
+          <span class="small text-muted-2">match</span>
+        </div>
+      </div>
+      <p class="fs-5 mt-4 mb-4 profile-bio" id="pBio"></p>
+      <div class="d-flex flex-wrap gap-2" id="pInterests"></div>
+    </section>
+    <section class="row g-3 mb-4" id="facts"></section>
+    <section class="d-grid gap-3 mb-4" id="prompts"></section>
+    <section class="glass p-4 d-flex flex-wrap gap-2 justify-content-between align-items-center reveal">
+      <div>
+        <strong>
+          Share
+          <span class="pn"></span>'s profile
+        </strong>
+        <div class="small text-muted-2">Know someone who'd be a great match?</div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-glass" id="copyLink">
+          <i class="bi bi-link-45deg me-1"></i>
+          Copy link
+        </button>
+        <button class="btn btn-glass" data-bs-toggle="modal" data-bs-target="#blockModal">
+          <i class="bi bi-slash-circle me-1"></i>
+          Block
+        </button>
+        <button class="btn btn-glass text-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+          <i class="bi bi-flag me-1"></i>
+          Report
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+{% include "dashboard/partials/report_modal.html" %}
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3 text-center">
+      <div class="modal-body">
+        <i class="bi bi-slash-circle fs-1 text-brand"></i>
+        <h2 class="h4 fw-bold mt-2" id="blockTitle">
+          Block
+          <span class="pn"></span>?
+        </h2>
+        <p class="text-muted-2">They won't be able to see your profile or message you. They won't be told.</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-brand" id="confirmBlock">Block</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/profile.js' %}"></script>{% endblock %}

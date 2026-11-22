@@ -1,0 +1,139 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Messages — Darlova{% endblock %}
+{% block description %}Chat with your matches.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/messages.css' %}">{% endblock %}
+{% block topbar_title %}<div class="fw-bold font-display fs-5 lh-1">Messages</div><div class="small text-muted-2">Your conversations</div>{% endblock %}
+
+{% block content %}
+<div class="chat-wrap" id="chatWrap">
+  <aside class="conv-list glass" aria-label="Conversations">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Chats</h2>
+      <span class="chip" id="unreadTotal"></span>
+    </div>
+    <div class="input-icon mb-3">
+      <i class="bi bi-search"></i>
+      <input class="form-control py-2" id="convSearch" placeholder="Search chats" aria-label="Search chats" />
+    </div>
+    <div class="conv-scroll" id="convs" role="list">
+      <div class="text-center py-5"><div class="spinner-border text-brand" role="status"></div></div>
+    </div>
+  </aside>
+
+  <section class="chat glass" aria-label="Chat">
+    <div class="chat-placeholder" id="chatPlaceholder">
+      <i class="bi bi-chat-heart"></i>
+      <strong>Pick a chat</strong>
+      <span class="small">Your conversations with matches show up here.</span>
+    </div>
+    <div class="chat-head">
+      <button class="btn btn-glass btn-icon d-lg-none" id="backBtn" aria-label="Back to chats">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <a
+        id="chatProfileLink"
+        href="#"
+        class="d-flex align-items-center gap-3 text-decoration-none flex-grow-1"
+        style="min-width: 0; color: var(--text)">
+        <img id="chatAvatar" class="avatar avatar-md" src="" alt="" />
+        <div style="min-width: 0">
+          <div class="fw-bold text-truncate" id="chatName"></div>
+          <div class="small text-truncate" id="chatStatus"></div>
+        </div>
+      </a>
+      <button
+        class="btn btn-glass btn-icon d-none d-sm-inline-flex"
+        aria-label="Voice call"
+        data-demo="Connect voice calling (e.g. Agora / Twilio)">
+        <i class="bi bi-telephone"></i>
+      </button>
+      <button
+        class="btn btn-glass btn-icon d-none d-sm-inline-flex"
+        aria-label="Video call"
+        data-demo="Connect video calling (e.g. Agora / Twilio)">
+        <i class="bi bi-camera-video"></i>
+      </button>
+      <div class="dropdown">
+        <button class="btn btn-glass btn-icon" data-bs-toggle="dropdown" aria-label="More options">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" id="ddProfile" href="#">
+              <i class="bi bi-person me-2"></i>
+              View profile
+            </a>
+          </li>
+          <li>
+            <button class="dropdown-item" id="clearChat">
+              <i class="bi bi-eraser me-2"></i>
+              Clear chat for me
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" id="unmatchBtn">
+              <i class="bi bi-heartbreak me-2"></i>
+              Unmatch
+            </button>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <button class="dropdown-item" id="blockBtn">
+              <i class="bi bi-slash-circle me-2"></i>
+              Block
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+              <i class="bi bi-flag me-2"></i>
+              Report
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody" aria-live="polite"></div>
+    <div class="chat-foot position-relative">
+      <div class="quick-replies" id="quick"></div>
+      <div class="reply-bar" id="replyBar" hidden>
+        <i class="bi bi-reply-fill text-brand"></i>
+        <div class="flex-grow-1 min-w-0">
+          <div class="small fw-bold text-brand" id="replyWho"></div>
+          <div class="small text-muted-2 text-truncate" id="replyText"></div>
+        </div>
+        <button type="button" class="btn-close" id="replyCancel" aria-label="Cancel reply"></button>
+      </div>
+      <div class="emoji-pop glass-strong" id="emojiPop"></div>
+      <form class="d-flex gap-2 align-items-center" id="sendForm">
+        <button type="button" class="btn btn-glass btn-icon" id="emojiBtn" aria-label="Emoji">
+          <i class="bi bi-emoji-smile"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-glass btn-icon d-none d-sm-inline-flex"
+          aria-label="Attach photo"
+          data-demo="Photo sharing is coming soon">
+          <i class="bi bi-image"></i>
+        </button>
+        <textarea
+          class="form-control"
+          id="msgInput"
+          rows="1"
+          maxlength="2000"
+          placeholder="Type a message…"
+          autocomplete="off"
+          aria-label="Message"></textarea>
+        <button class="btn btn-brand btn-icon" aria-label="Send"><i class="bi bi-send-fill"></i></button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block modals %}
+{% include "dashboard/partials/report_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/messages.js' %}"></script>{% endblock %}

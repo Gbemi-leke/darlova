@@ -1,0 +1,21 @@
+{% comment %} Account avatar + dropdown in the dashboard top bar {% endcomment %}
+<div class="dropdown">
+  <button class="btn p-0 border-0" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account menu">
+    <img src="{{ user.avatar_url }}" alt="" class="avatar avatar-md">
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li class="px-3 py-2 small text-muted-2">Signed in as<br><strong style="color: var(--text)">{{ user.display_name }}</strong></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="{% url 'my_profile' %}"><i class="bi bi-person me-2"></i>My profile</a></li>
+    <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
+    <li><a class="dropdown-item" href="{% url 'premium' %}"><i class="bi bi-gem me-2"></i>Premium</a></li>
+    <li><a class="dropdown-item" href="{% url 'home' %}"><i class="bi bi-house me-2"></i>Darlova home</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Log out</button>
+      </form>
+    </li>
+  </ul>
+</div>

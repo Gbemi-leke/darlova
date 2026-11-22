@@ -1,0 +1,222 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Discover — Darlova{% endblock %}
+{% block description %}Find people near you.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/discover.css' %}">{% endblock %}
+{% block topbar_title %}<div class="fw-bold font-display fs-5 lh-1">Discover</div><div class="small text-muted-2">People picked for you</div>{% endblock %}
+
+{% block content %}
+<div class="deck-wrap">
+  <div class="deck-col">
+    <div class="d-flex justify-content-between align-items-center w-100 mb-3" style="max-width: 400px">
+      <div class="d-flex gap-2">
+        <span class="chip">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span id="filterSummary">Everyone · 18–60</span>
+        </span>
+      </div>
+      <button class="btn btn-glass btn-icon" data-bs-toggle="offcanvas" data-bs-target="#filters" aria-label="Filters">
+        <i class="bi bi-sliders"></i>
+      </button>
+    </div>
+    <div class="deck" id="deck" aria-live="polite">
+      <div class="empty-deck glass" id="loadingDeck">
+        <div class="spinner-border text-brand mb-3" role="status"></div>
+        <p class="text-muted-2 mb-0">Finding people for you…</p>
+      </div>
+      <div class="empty-deck glass" id="emptyDeck" style="display: none">
+        <div class="radar"><img src="{{ user.avatar_url }}" alt="" /></div>
+        <h2 class="h4 fw-bold">You've seen everyone for now</h2>
+        <p class="text-muted-2">Widen your filters or check back soon. New people join every day.</p>
+        <button class="btn btn-brand" id="reloadDeck">
+          <i class="bi bi-arrow-repeat me-1"></i>
+          Check again
+        </button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="act act-sm act-rewind" id="btnRewind" aria-label="Rewind" data-bs-toggle="tooltip" title="Rewind">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+      <button class="act act-pass" id="btnPass" aria-label="Pass" data-bs-toggle="tooltip" title="Pass (←)">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <button class="act act-like" id="btnLike" aria-label="Like" data-bs-toggle="tooltip" title="Like (→)">
+        <i class="bi bi-heart-fill"></i>
+      </button>
+      <button
+        class="act act-super"
+        id="btnSuper"
+        aria-label="Super like"
+        data-bs-toggle="tooltip"
+        title="Super like (↑)">
+        <i class="bi bi-star-fill"></i>
+      </button>
+      <button class="act act-sm act-boost" id="btnBoost" aria-label="Boost" data-bs-toggle="tooltip" title="Boost">
+        <i class="bi bi-lightning-charge-fill"></i>
+      </button>
+    </div>
+    <p class="small text-muted-2 mt-3 d-none d-md-block">
+      Tip: drag the card, or use
+      <span class="kbd">←</span>
+      <span class="kbd">→</span>
+      <span class="kbd">↑</span>
+      on your keyboard.
+    </p>
+  </div>
+
+  <div class="side-col d-grid gap-3">
+    <div class="glass p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h6 mb-0">Today</h2>
+        <span class="small text-muted-2" id="todayDate"></span>
+      </div>
+      <div class="row g-2 text-center">
+        <div class="col-6">
+          <div class="glass glass-flat py-3 stat-tile" style="border-radius: 16px">
+            <div class="h4 fw-bold mb-0 text-brand" data-stat="likes_sent_today">{{ stats.likes_sent_today }}</div>
+            <div class="small text-muted-2">You liked</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="glass glass-flat py-3 stat-tile" style="border-radius: 16px">
+            <div class="h4 fw-bold mb-0 text-brand" data-stat="likes_received_today">{{ stats.likes_received_today }}</div>
+            <div class="small text-muted-2">Liked you</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="glass glass-flat py-3 stat-tile" style="border-radius: 16px">
+            <div class="h4 fw-bold mb-0 text-violet" data-stat="matches_today">{{ stats.matches_today }}</div>
+            <div class="small text-muted-2">Matches</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="glass glass-flat py-3 stat-tile" style="border-radius: 16px">
+            <div class="h4 fw-bold mb-0" data-stat="likes_left">{{ stats.likes_left }}</div>
+            <div class="small text-muted-2">Likes left</div>
+          </div>
+        </div>
+      </div>
+      <div class="small text-muted-2 mt-3 d-flex align-items-center gap-2"><span class="live-dot"></span> Live · updates as people like you</div>
+    </div>
+    <div class="glass p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h6 mb-0">New matches</h2>
+        <a href="{% url 'matches' %}" class="small fw-semibold">See all</a>
+      </div>
+      <div class="d-flex gap-2 flex-wrap mini-match" id="miniMatches">
+        <span class="small text-muted-2">Like someone to get started.</span>
+      </div>
+    </div>
+    <div class="glass p-4" id="boostCard">
+      <div class="d-flex gap-3 align-items-center">
+        <div
+          class="feature-icon"
+          style="
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--chip-violet);
+            color: var(--violet-text);
+            font-size: 1.3rem;
+          ">
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+        <div>
+          <div class="fw-bold">Boost your profile</div>
+          <div class="small text-muted-2">Be seen first for 30 minutes. Premium feature.</div>
+        </div>
+      </div>
+      <div class="mt-3" id="boostProgress" style="display: none">
+        <div class="d-flex justify-content-between small mb-1">
+          <span class="fw-semibold text-violet">Boost active</span>
+          <span id="boostTime">30:00</span>
+        </div>
+        <div class="boost-bar"><span id="boostBar"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Filters -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filters" aria-labelledby="filtersLabel">
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title h4 fw-bold" id="filtersLabel">Filters</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="small text-muted-2 mb-4">
+      You're seeing <strong>{{ user.profile.get_show_me_display|lower }}</strong>.
+      <a href="{% url 'settings' %}#discovery">Change in settings</a>
+    </p>
+    <div class="form-check form-switch mb-4">
+      <input class="form-check-input" type="checkbox" id="fCity" />
+      <label class="form-check-label" for="fCity">Only people in {{ user.profile.city }}</label>
+    </div>
+    <label class="form-label d-flex justify-content-between">
+      Age range
+      <span class="text-brand" id="fAgeOut">18 – 60</span>
+    </label>
+    <div class="d-flex gap-3 mb-4">
+      <input type="range" class="form-range" id="fAgeMin" min="18" max="70" value="18" aria-label="Minimum age" />
+      <input type="range" class="form-range" id="fAgeMax" min="18" max="70" value="60" aria-label="Maximum age" />
+    </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="fVerified" />
+      <label class="form-check-label" for="fVerified">Verified profiles only</label>
+    </div>
+    <div class="form-check form-switch mb-4">
+      <input class="form-check-input" type="checkbox" id="fOnline" />
+      <label class="form-check-label" for="fOnline">Online now</label>
+    </div>
+    <div class="glass glass-flat p-3 mb-4" style="border-radius: 16px">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <i class="bi bi-gem text-violet"></i>
+        <strong>Premium filters</strong>
+      </div>
+      <div class="small text-muted-2 mb-2">Height, religion, education, lifestyle and more.</div>
+      <a href="{% url 'premium' %}" class="small fw-semibold">Upgrade to unlock</a>
+    </div>
+    <button class="btn btn-brand btn-lg w-100" id="applyFilters" data-bs-dismiss="offcanvas">Apply filters</button>
+  </div>
+</div>
+
+<!-- Match modal -->
+<div class="modal fade match-modal" id="matchModal" tabindex="-1" aria-labelledby="matchTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="match-title" id="matchTitle">It's a Match!</div>
+      <p class="mb-0" style="opacity: 0.92">
+        You and
+        <strong id="matchName"></strong>
+        liked each other.
+      </p>
+      <div class="match-avatars">
+        <img src="{{ user.avatar_url }}" alt="You" />
+        <img id="matchImg" src="" alt="" />
+      </div>
+      <div class="d-flex gap-2 mb-3">
+        <input
+          class="form-control"
+          id="quickMsg"
+          placeholder="Say something nice…"
+          style="background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.35); color: #fff" />
+        <button class="btn btn-light fw-bold" id="sendQuick" style="color: #b0124c" aria-label="Send">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mb-3" id="icebreakers"></div>
+      <a class="btn btn-sm btn-light fw-semibold mb-2" id="openChat" href="#" style="color: #b0124c">Open chat</a>
+      <button class="btn btn-link text-white fw-semibold" data-bs-dismiss="modal">Keep swiping</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/discover.js' %}"></script>{% endblock %}

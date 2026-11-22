@@ -1,0 +1,15 @@
+{% extends "frontend/base.html" %}
+{% block title %}No dating profile — Darlova{% endblock %}
+{% block content %}
+<section class="container py-5 text-center" style="min-height: 60vh">
+  <div class="glass p-5 mx-auto" style="max-width: 560px">
+    <i class="bi bi-person-badge fs-1 text-brand"></i>
+    <h1 class="h3 fw-bold mt-3">This account has no dating profile</h1>
+    <p class="text-muted-2">Admin accounts made with <code>createsuperuser</code> can manage the site but can't use the app. Create a member account to try Darlova.</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <a href="{% url 'admin:index' %}" class="btn btn-glass">Open admin</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn-brand">Log out</button></form>
+    </div>
+  </div>
+</section>
+{% endblock %}
