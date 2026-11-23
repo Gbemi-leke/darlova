@@ -4,6 +4,7 @@ import json
 from datetime import timedelta
 from functools import wraps
 
+from django.conf import settings
 from django.contrib.auth import logout, password_validation, update_session_auth_hash
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ValidationError
@@ -80,8 +81,60 @@ def as_bool(v):
 @require_GET
 @api
 def pulse(request):
-    """Polled every ~15s on dashboard pages: keeps you 'online', refreshes badges and live stats."""
-    return ok(**unread_counts(request.user), stats=services.live_stats(request.user))
+    """Polled every ~15s on dashboard pages: keeps you 'online', refreshes badges, live stats
+    and the newest notification (for the in-app alert)."""
+    n = Notification.objects.filter(user=request.user, is_read=False).exclude(kind="view").select_related("actor").first()
+    latest = None
+    if n:
+        latest = {"key": f"{n.pk}-{int(n.created_at.timestamp())}", "kind": n.kind, "text": n.text,
+                  "link": f"/notifications/{n.pk}/open/", "img": n.actor.avatar_url if n.actor else None}
+    return ok(**unread_counts(request.user), stats=services.live_stats(request.user), latest=latest)
+
+
+# ---------------------------------------------------------------------------
+# Push notifications
+# ---------------------------------------------------------------------------
+@require_GET
+@api
+def push_key(request):
+    from . import push
+    return ok(key=settings.VAPID_PUBLIC_KEY if push.enabled() else None)
+
+
+@require_POST
+@api
+def push_subscribe(request):
+    from .models import PushSubscription
+    d = body(request)
+    endpoint = str(d.get("endpoint", ""))
+    keys = d.get("keys") or {}
+    if not endpoint.startswith("https://") or not keys.get("p256dh") or not keys.get("auth"):
+        raise ValueError("Invalid subscription.")
+    PushSubscription.objects.update_or_create(endpoint=endpoint[:500], defaults={
+        "user": request.user, "p256dh": str(keys["p256dh"])[:200], "auth": str(keys["auth"])[:100],
+        "user_agent": request.META.get("HTTP_USER_AGENT", "")[:300]})
+    return ok()
+
+
+@require_POST
+@api
+def push_unsubscribe(request):
+    from .models import PushSubscription
+    PushSubscription.objects.filter(user=request.user, endpoint=str(body(request).get("endpoint", ""))).delete()
+    return ok()
+
+
+@require_POST
+@api
+def push_test(request):
+    from . import push
+    if not push.enabled():
+        raise ValueError("Push notifications aren't set up on the server yet.")
+    if not request.user.push_subscriptions.exists():
+        raise ValueError("Turn on notifications on this phone first.")
+    push.send(request.user, "Notifications are on ✅", "This is how Darlova will tell you about new messages.",
+              url="/messages/", tag="test")
+    return ok()
 
 
 @require_POST
@@ -326,7 +379,8 @@ def chat_send(request, match_id):
         setattr(match, f"typing_{side}_until", None)
         match.last_message_at = msg.created_at
         match.save(update_fields=[f"typing_{side}_until", "last_message_at"])
-    services.notify(other, "msg", f"{me.display_name} sent you a message", actor=me, link=f"/messages/?id={match.pk}")
+    services.notify(other, "msg", f"{me.display_name} sent you a message", actor=me, link=f"/messages/?id={match.pk}",
+                    push_body=text if len(text) <= 120 else text[:117] + "…", push_tag=f"chat-{match.pk}")
     return ok(message=_msg(msg, me, False))
 
 

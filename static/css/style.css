@@ -112,8 +112,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-a {
+/* No underlines on links anywhere on the site */
+a,
+a:hover,
+a:focus,
+.btn-link {
   color: var(--accent-text);
+  text-decoration: none;
 }
 a:hover {
   color: var(--brand);
@@ -737,4 +742,43 @@ a:hover {
 }
 @keyframes navProgress {
   to { width: 90%; }
+}
+
+/* ---------- notifications ---------- */
+.push-ic {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #e91e63, #7c3aed);
+}
+.live-alert {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  width: min(440px, calc(100% - 24px));
+  z-index: 1090;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 20px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transform: translate(-50%, -160%);
+  transition: transform 0.4s var(--ease);
+}
+.live-alert.show {
+  transform: translate(-50%, 0);
+}
+.live-alert:hover {
+  color: var(--text);
+}
+.install-banner .btn {
+  white-space: nowrap;
 }

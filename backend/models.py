@@ -156,3 +156,42 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"→ {self.user}: {self.text}"
+
+
+class PushSubscription(models.Model):
+    """One phone/browser that agreed to receive push notifications."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="push_subscriptions")
+    endpoint = models.CharField(max_length=500, unique=True)
+    p256dh = models.CharField(max_length=200)
+    auth = models.CharField(max_length=100)
+    user_agent = models.CharField(max_length=300, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user} · {self.user_agent[:40]}"
+
+
+class Announcement(models.Model):
+    """A message from the Darlova team, sent from the admin to members' notifications (and phones)."""
+
+    AUDIENCE = [("all", "Every member"), ("selected", "Only the members I choose")]
+
+    title = models.CharField(max_length=60, help_text="Shown in bold on the phone, e.g. 'Darlova is 1 week old 🎉'")
+    message = models.CharField(max_length=180, help_text="Up to 180 characters.")
+    link = models.CharField(max_length=200, blank=True, default="/discover/",
+                            help_text="Page it opens, e.g. /discover/ or /premium/")
+    audience = models.CharField(max_length=10, choices=AUDIENCE, default="all")
+    recipients = models.ManyToManyField(User, blank=True, related_name="+",
+                                        help_text="Only used when audience is 'Only the members I choose'.")
+    send_push = models.BooleanField("also send to phones", default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    sent_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title

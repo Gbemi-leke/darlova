@@ -204,3 +204,12 @@ LOGGING = {
         "django.request": {"handlers": ["console", "mail_admins"], "level": "ERROR", "propagate": False},
     },
 }
+
+
+# ---------------------------------------------------------------------------
+# Push notifications (alerts on phones, even when Darlova is closed)
+# ---------------------------------------------------------------------------
+# Create the keys once with:  python manage.py vapid_keys   → paste the 3 lines into .env
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
+VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "mailto:hello@darlova.com")

@@ -16,6 +16,10 @@ urlpatterns = [
 
     # JSON API used by the page scripts
     path("api/pulse/", api.pulse, name="api_pulse"),
+    path("api/push/key/", api.push_key, name="api_push_key"),
+    path("api/push/subscribe/", api.push_subscribe, name="api_push_subscribe"),
+    path("api/push/unsubscribe/", api.push_unsubscribe, name="api_push_unsubscribe"),
+    path("api/push/test/", api.push_test, name="api_push_test"),
     path("api/notifications/read/", api.notifications_read, name="api_notifications_read"),
     path("api/discover/", api.discover, name="api_discover"),
     path("api/swipe/", api.swipe, name="api_swipe"),

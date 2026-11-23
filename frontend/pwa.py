@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.decorators.cache import cache_control
 
-APP_VERSION = "2"  # bump to make every installed app refresh its offline cache
+APP_VERSION = "3"  # bump to make every installed app refresh its offline cache
 
 
 @cache_control(max_age=3600)
@@ -142,6 +142,42 @@ self.addEventListener('fetch', (e) => {
     );
   }
   // Everything else (API, photos) goes straight to the network.
+});
+
+/* ---------- Push notifications (new messages, matches, likes, announcements) ---------- */
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data && e.data.text() }; }
+  const title = d.title || 'Darlova';
+  e.waitUntil(Promise.all([
+    self.registration.showNotification(title, {
+      body: d.body || '',
+      icon: d.icon,
+      badge: d.badge,
+      tag: d.tag || undefined,          // a new message from the same chat replaces the old alert
+      renotify: !!d.tag,
+      data: { url: d.url || '/discover/' },
+    }),
+    // red number on the app icon (where the phone supports it)
+    (d.count != null && self.navigator && 'setAppBadge' in self.navigator)
+      ? (d.count ? self.navigator.setAppBadge(d.count) : self.navigator.clearAppBadge()).catch(() => {})
+      : Promise.resolve(),
+  ]));
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || '/discover/', self.location.origin).href;
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) {
+        if (w.url.startsWith(self.location.origin) && 'focus' in w) {
+          return w.focus().then((f) => (f && 'navigate' in f ? f.navigate(url) : null));
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
 });
 """
 

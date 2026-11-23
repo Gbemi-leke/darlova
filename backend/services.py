@@ -198,7 +198,16 @@ def likes_left_today(user):
 # ---------------------------------------------------------------------------
 # Actions
 # ---------------------------------------------------------------------------
-def notify(user, kind, text, actor=None, link=""):
+PUSH_TITLES = {
+    "match": "It's a match! 💘",
+    "like": "Someone likes you ❤️",
+    "super": "You got a super like ⭐",
+    "system": "Darlova",
+}
+
+
+def notify(user, kind, text, actor=None, link="", push_body=None, push_tag=None):
+    """Save an in-app notification and, if they turned it on, send it to their phone too."""
     prefs = getattr(user, "profile", None)
     if prefs:
         if kind == "match" and not prefs.notify_matches:
@@ -213,8 +222,24 @@ def notify(user, kind, text, actor=None, link=""):
         if n:
             n.text, n.created_at, n.is_read = text, timezone.now(), False
             n.save(update_fields=["text", "created_at", "is_read"])
-            return
-    Notification.objects.create(user=user, actor=actor, kind=kind, text=text, link=link)
+        else:
+            Notification.objects.create(user=user, actor=actor, kind=kind, text=text, link=link)
+    else:
+        Notification.objects.create(user=user, actor=actor, kind=kind, text=text, link=link)
+
+    if kind == "view":
+        return  # profile views stay in the app; a phone alert for each would be too much
+    from . import push
+    from .context_processors import unread_counts
+
+    if kind == "msg" and actor:
+        title, body = actor.display_name, push_body or text
+    else:
+        title = PUSH_TITLES.get(kind, "Darlova")
+        body = {"like": "Open Darlova to see who.", "super": "Someone really wants to meet you. Open Darlova to see who."}.get(kind, text)
+    c = unread_counts(user)
+    push.send(user, title, body, url=link or "/notifications/", tag=push_tag or kind,
+              badge_count=c["unread_messages"] + c["unread_notifications"])
 
 
 @transaction.atomic
@@ -361,3 +386,24 @@ def search_members(user, q, limit=30):
         results.append(card)
     results.sort(key=lambda c: (c["match_id"] is None, not c["online"], c["name"].lower()))
     return results[:limit]
+
+
+def send_announcement(announcement):
+    """Deliver an admin announcement to members' notifications (and phones). Returns how many got it."""
+    from . import push
+
+    members = User.objects.filter(is_active=True, profile__isnull=False)
+    if announcement.audience == "selected":
+        members = members.filter(pk__in=announcement.recipients.values("pk"))
+    members = list(members)
+    text = f"{announcement.title}: {announcement.message}"
+    Notification.objects.bulk_create(
+        [Notification(user=u, kind="system", text=text[:200], link=announcement.link) for u in members],
+        batch_size=500)
+    if announcement.send_push:
+        push.send(members, announcement.title, announcement.message, url=announcement.link or "/notifications/",
+                  tag=f"announcement-{announcement.pk}")
+    announcement.sent_at = timezone.now()
+    announcement.sent_count = len(members)
+    announcement.save(update_fields=["sent_at", "sent_count"])
+    return len(members)

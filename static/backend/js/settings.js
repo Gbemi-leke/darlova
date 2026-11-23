@@ -118,12 +118,36 @@ $(function () {
     });
   });
 
-  /* browser push permission (alerts themselves come later) */
+  /* phone notifications (Web Push) */
+  var pushTexts = {
+    on: 'On for this device. You\'ll get alerts for messages, matches and news.',
+    off: 'Get alerts for messages, matches and news, even when Darlova is closed.',
+    denied: 'Blocked. Allow notifications for Darlova in your phone or browser settings.',
+    'needs-install': 'On iPhone: add Darlova to your home screen, then turn this on from the app.',
+    unsupported: "This browser can't show notifications.",
+  };
+  function pushUI(state) {
+    $('#pushStatus').text(pushTexts[state] || pushTexts.off);
+    $('#pushTest').prop('hidden', state !== 'on');
+    $('#pushBtn').text(state === 'on' ? 'Turn off' : state === 'needs-install' ? 'How?' : 'Turn on')
+      .toggleClass('btn-brand', state !== 'on').toggleClass('btn-glass', state === 'on')
+      .data('state', state).prop('disabled', state === 'unsupported');
+  }
+  if (window.DarlovaPush) DarlovaPush.status().then(pushUI);
   $('#pushBtn').on('click', function () {
-    if (!('Notification' in window)) return showToast('Push not supported in this browser', 'exclamation-circle-fill');
-    Notification.requestPermission().then(function (p) {
-      showToast(p === 'granted' ? 'Push notifications allowed' : 'Push notifications blocked', p === 'granted' ? 'bell-fill' : 'bell-slash');
-    });
+    var state = $(this).data('state');
+    if (state === 'needs-install') return window.showInstallHelp && showInstallHelp(true);
+    var $b = $(this).prop('disabled', true);
+    (state === 'on' ? DarlovaPush.disable() : DarlovaPush.enable())
+      .then(function () {
+        showToast(state === 'on' ? 'Notifications turned off' : 'Notifications are on', state === 'on' ? 'bell-slash' : 'bell-fill');
+      })
+      .catch(function (r) { DarlovaPush.explain(r); })
+      .then(function () { return DarlovaPush.status(); })
+      .then(function (st) { pushUI(st); $b.prop('disabled', st === 'unsupported'); });
+  });
+  $('#pushTest').on('click', function () {
+    DarlovaPush.test().done(function () { showToast('Test sent. Check your notifications.', 'send-fill'); });
   });
 
   /* pause / delete */

@@ -43,6 +43,7 @@
   <!-- Data from the Django view for this page -->
   {{ page_data|default:None|json_script:"page-data" }}
   <script src="{% static 'js/dashboard.js' %}"></script>
+  <script src="{% static 'js/push.js' %}"></script>
 
   <!-- Page script -->
   {% block extra_js %}{% endblock %}

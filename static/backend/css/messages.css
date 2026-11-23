@@ -364,7 +364,8 @@
 .msg-row.failed .retry {
   font-size: 0.68rem;
   color: inherit;
-  text-decoration: underline;
+  text-decoration: none;
+  font-weight: 700;
 }
 .msg-row.flash .bubble {
   box-shadow: 0 0 0 3px var(--brand);

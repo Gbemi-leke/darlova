@@ -17,7 +17,38 @@ $(function () {
     if (c.unread_notifications && !$bell.find('.pulse').length) $bell.append('<span class="pulse"></span>');
     if (!c.unread_notifications) $bell.find('.pulse').remove();
     if (c.stats) updateStats(c.stats);
+    if ('latest' in c) alertNew(c.latest);
+    // red number on the home-screen icon (installed app)
+    var total = (c.unread_messages || 0) + (c.unread_notifications || 0);
+    if ('setAppBadge' in navigator) (total ? navigator.setAppBadge(total) : navigator.clearAppBadge()).catch(function () {});
   };
+
+  /* In-app alert when something new arrives while you're using Darlova
+     (new message, match, like, announcement). Tap it to open. */
+  var lastKey;
+  try { lastKey = sessionStorage.getItem('lv-last-alert'); } catch (e) {}
+  function alertNew(n) {
+    if (!n) return;
+    if (lastKey === undefined || lastKey === null) {
+      lastKey = n.key; // first check on this visit: just remember what's already there
+    } else if (n.key !== lastKey) {
+      lastKey = n.key;
+      // The chat page already shows new messages live.
+      if (!(n.kind === 'msg' && location.pathname === '/messages/')) {
+        var icon = { msg: 'chat-heart-fill', match: 'heart-fill', like: 'hand-thumbs-up-fill', super: 'star-fill', system: 'megaphone-fill' }[n.kind] || 'bell-fill';
+        $('#liveAlert').remove();
+        var $a = $(
+          '<a id="liveAlert" class="live-alert glass-strong" href="' + esc(n.link) + '" role="status">' +
+            (n.img ? '<img src="' + esc(n.img) + '" class="avatar avatar-md" alt="">' : '<span class="push-ic"><i class="bi bi-' + icon + '"></i></span>') +
+            '<span class="flex-grow-1 small fw-semibold">' + esc(n.text) + '</span><i class="bi bi-chevron-right"></i></a>',
+        ).appendTo('body');
+        setTimeout(function () { $a.addClass('show'); }, 30);
+        setTimeout(function () { $a.removeClass('show'); setTimeout(function () { $a.remove(); }, 400); }, 6000);
+        if (navigator.vibrate) navigator.vibrate(60);
+      }
+    }
+    try { sessionStorage.setItem('lv-last-alert', lastKey); } catch (e) {}
+  }
 
   /* Any element with data-stat="likes_received_today" (etc.) counts up/down to the new value. */
   window.updateStats = function (stats) {
