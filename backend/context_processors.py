@@ -16,6 +16,6 @@ def dashboard_counts(request):
     """Badge numbers for the sidebar / bottom menu / bell on every dashboard page."""
     user = getattr(request, "user", None)
     if not user or not user.is_authenticated or not request.path.startswith(
-            ("/discover", "/matches", "/messages", "/profile", "/my-profile", "/settings", "/notifications")):
+            ("/discover", "/matches", "/messages", "/profile", "/my-profile", "/settings", "/notifications", "/search")):
         return {}
     return {"counts": unread_counts(user), "report_reasons": Report.REASONS}

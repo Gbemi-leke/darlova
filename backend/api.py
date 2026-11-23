@@ -21,7 +21,7 @@ from frontend.models import Photo, Profile, User
 
 from . import services
 from .context_processors import unread_counts
-from .models import Block, Match, Message, Notification, Report
+from .models import Block, Like, Match, Message, Notification, Report
 from .views import HEIGHT_CHOICES, PROMPT_CHOICES
 
 MAX_PHOTOS = 6
@@ -106,8 +106,29 @@ def discover(request):
         verified=as_bool(g.get("verified")), online=as_bool(g.get("online")))
     people = list(qs.order_by("-last_seen")[:60])
     people.sort(key=lambda u: (u.pk not in liked_me,))  # people who liked you first
+    reasons = []
+    if not people:  # explain the empty deck in plain English
+        reasons = services.discover_reasons(
+            request.user, age_min=age_min, age_max=age_max,
+            same_city=(not request.user.profile.global_mode) if same_city is None else same_city,
+            verified=as_bool(g.get("verified")), online=as_bool(g.get("online")))
     return ok(people=[services.member_card(u, viewer=request.user) for u in people[:30]],
-              likesLeft=services.likes_left_today(request.user))
+              likesLeft=services.likes_left_today(request.user), reasons=reasons)
+
+
+@require_POST
+@api
+def reset_passes(request):
+    """Let people you passed on appear in Discover again."""
+    n, _ = Like.objects.filter(from_user=request.user, kind=Like.PASS).exclude(
+        to_user_id__in=services.blocked_ids(request.user)).delete()
+    return ok(count=n)
+
+
+@require_GET
+@api
+def search(request):
+    return ok(results=services.search_members(request.user, request.GET.get("q")))
 
 
 @require_POST
@@ -495,6 +516,11 @@ def settings_prefs(request):
         if key in PREF_FIELDS:
             setattr(p, key, as_bool(value))
             changed.append(key)
+    if "show_me" in d:
+        if d["show_me"] not in dict(Profile.SHOW_ME_CHOICES):
+            raise ValueError("Choose women, men or everyone.")
+        p.show_me = d["show_me"]
+        changed.append("show_me")
     if "age_min" in d or "age_max" in d:
         p.age_min = max(18, min(int(d.get("age_min", p.age_min)), 99))
         p.age_max = max(p.age_min, min(int(d.get("age_max", p.age_max)), 99))

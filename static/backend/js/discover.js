@@ -80,6 +80,7 @@ $(function () {
           $('#deck').append(cardHtml(u));
         });
         layout();
+        showReasons(r.reasons || []);
         $('#emptyDeck').toggle(!r.people.length);
       })
       .always(function () {
@@ -247,6 +248,31 @@ $(function () {
     }
   });
   $('#reloadDeck').on('click', load);
+
+  /* empty deck: explain why, with a button to fix each reason */
+  var lastReasons = [];
+  function showReasons(reasons) {
+    lastReasons = reasons;
+    $('#reasons').html(reasons.length ? reasons.map(function (r) {
+      return '<li class="d-flex gap-2"><i class="bi bi-info-circle text-brand flex-shrink-0 mt-1"></i><span>' + esc(r.text) + '</span></li>';
+    }).join('') : '<li class="text-center text-muted-2">Check back soon. New people join every day.</li>');
+    var fixes = reasons.map(function (r) { return r.fix; });
+    $('#reasonFilters').prop('hidden', fixes.indexOf('filters') < 0);
+    $('#reasonSettings').prop('hidden', fixes.indexOf('settings') < 0);
+    $('#resetPasses').prop('hidden', fixes.indexOf('passes') < 0);
+  }
+  $('#resetPasses').on('click', function () {
+    api('POST', '/api/passes/reset/').done(function (r) {
+      showToast(r.count + (r.count === 1 ? ' person is' : ' people are') + ' back in your deck', 'arrow-counterclockwise');
+      load();
+    });
+  });
+  // When the deck runs out mid-session, fetch the reasons too.
+  var origFling = fling;
+  fling = function ($c, dir) {
+    origFling($c, dir);
+    if ($('#deck .swipe-card').length <= 1) setTimeout(load, 600);
+  };
 
   /* filter panel */
   $('#fAgeMin,#fAgeMax').on('input', function () {

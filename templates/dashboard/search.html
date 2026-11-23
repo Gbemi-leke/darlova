@@ -1,0 +1,27 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Search — Darlova{% endblock %}
+{% block topbar_title %}<div class="font-display fw-bold fs-5">Search</div><div class="small text-muted-2">Find people by name</div>{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'backend/css/matches.css' %}">{% endblock %}
+
+{% block content %}
+<section class="glass p-3 p-md-4 mb-4">
+  <form class="input-icon" id="searchForm" role="search">
+    <i class="bi bi-search"></i>
+    <input type="search" class="form-control form-control-lg" id="q" name="q" value="{{ q }}"
+      placeholder="Type a first name…" aria-label="Search people by name" autocomplete="off" autofocus />
+  </form>
+  <p class="small text-muted-2 mt-2 mb-0">
+    Shows your matches, plus anyone Discover could show you (based on both people's "Show me" settings).
+  </p>
+</section>
+
+<div class="row g-3" id="results"></div>
+<div class="text-center py-5 d-none" id="noResults">
+  <i class="bi bi-search-heart fs-1 text-brand"></i>
+  <p class="text-muted-2 mt-2 mb-0" id="noResultsText"></p>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'backend/js/search.js' %}"></script>{% endblock %}

@@ -387,13 +387,14 @@
         {% else %}
         <a href="{% url 'register' %}" class="btn btn-brand btn-lg">Create free profile</a>
         {% endif %}
-        <a href="#" class="btn btn-glass btn-lg" data-demo="Add your App Store link">
+        <!-- No app store needed: Darlova installs from the browser (Add to Home Screen) -->
+        <a href="#" class="btn btn-glass btn-lg" data-install>
           <i class="bi bi-apple me-1"></i>
-          App Store
+          Add to iPhone
         </a>
-        <a href="#" class="btn btn-glass btn-lg" data-demo="Add your Google Play link">
-          <i class="bi bi-google-play me-1"></i>
-          Google Play
+        <a href="#" class="btn btn-glass btn-lg" data-install>
+          <i class="bi bi-android2 me-1"></i>
+          Add to Android
         </a>
       </div>
     </div>

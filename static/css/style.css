@@ -645,3 +645,63 @@ a:hover {
 }
 
 /* ---------- confetti ---------- */
+
+/* =========================================================
+   Installable app (home-screen icon)
+   ========================================================= */
+.install-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 1080;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  transform: translateY(140%);
+  transition: transform 0.35s var(--ease);
+}
+.install-banner.show {
+  transform: none;
+}
+.install-banner img {
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+.install-banner .bi-box-arrow-up {
+  color: #0a84ff;
+  font-size: 1.1em;
+}
+.install-arrow {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  transform: rotate(45deg);
+  background: inherit;
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+/* the banner sits above the dashboard's bottom menu */
+.app-shell .install-banner {
+  bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+/* Inside the installed app: respect the iPhone notch and home bar */
+.is-app body {
+  padding-top: env(safe-area-inset-top);
+}
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+.is-app [data-install],
+.is-app .set-row:has([data-install]) {
+  display: none !important;
+}

@@ -53,7 +53,10 @@ $(function () {
           '<div class="d-flex justify-content-between gap-2"><div class="last">' + preview + '</div>' +
           (c.unread ? '<span class="unread">' + c.unread + '</span>' : '') + '</div></div></button>'
         );
-      }).join('') || '<p class="text-center text-muted-2 small py-4">No chats match that name.</p>',
+      }).join('') ||
+        '<div class="text-center text-muted-2 small py-4 px-3">No chats with that name.<br>' +
+          '<a class="btn btn-glass btn-sm mt-2" href="/search/?q=' + encodeURIComponent($('#convSearch').val()) + '">' +
+          '<i class="bi bi-search me-1"></i>Search all members</a></div>',
     );
   }
 

@@ -262,3 +262,102 @@ def block(user, target):
     if m:
         m.delete()
     Like.objects.update_or_create(from_user=user, to_user=target, defaults={"kind": Like.PASS})
+
+
+# ---------------------------------------------------------------------------
+# "Why is Discover empty?" — plain-English reasons for the empty deck
+# ---------------------------------------------------------------------------
+SHOW_LABEL = {"women": "women", "men": "men", "everyone": "everyone"}
+
+
+def _plural(n, one, many):
+    return f"{n} {one if n == 1 else many}"
+
+
+def discover_reasons(user, *, age_min, age_max, same_city, verified=False, online=False):
+    """Count the members Discover skipped, by the first rule that hid each one."""
+    me = user.profile
+    others = list(User.objects.filter(is_active=True, profile__isnull=False).exclude(pk=user.pk)
+                  .select_related("profile").prefetch_related("photos"))
+    blocked = blocked_ids(user)
+    decided = dict(Like.objects.filter(from_user=user).values_list("to_user_id", "kind"))
+    my_gender_word = {"woman": "women", "man": "men"}.get(me.gender, "")
+    window = timezone.now() - timedelta(seconds=getattr(settings, "ONLINE_WINDOW_SECONDS", 180))
+
+    counts = {k: 0 for k in ("blocked", "liked", "passed", "hidden", "nophoto", "you_show", "they_show",
+                             "age", "city", "verified", "online")}
+    for o in others:
+        p = o.profile
+        if o.pk in blocked:
+            counts["blocked"] += 1
+        elif decided.get(o.pk) in (Like.LIKE, Like.SUPER):
+            counts["liked"] += 1
+        elif decided.get(o.pk) == Like.PASS:
+            counts["passed"] += 1
+        elif not p.is_visible:
+            counts["hidden"] += 1
+        elif not o.photos.all():
+            counts["nophoto"] += 1
+        elif not me.shows(p.gender):
+            counts["you_show"] += 1
+        elif not p.shows(me.gender):
+            counts["they_show"] += 1
+        elif p.age is None or not age_min <= p.age <= age_max:
+            counts["age"] += 1
+        elif same_city and p.city != me.city:
+            counts["city"] += 1
+        elif verified and not p.is_verified:
+            counts["verified"] += 1
+        elif online and not (o.last_seen and o.last_seen >= window and p.show_online):
+            counts["online"] += 1
+
+    c = counts
+    reasons = []
+    if not others:
+        reasons.append({"text": "You're one of the first members. Invite friends to join Darlova!", "fix": None})
+    if c["you_show"]:
+        reasons.append({"text": f"{_plural(c['you_show'], 'person', 'people')} not shown because you're set to see "
+                                f"{SHOW_LABEL.get(me.show_me, me.show_me)} only.", "fix": "settings"})
+    if c["they_show"]:
+        reasons.append({"text": f"{_plural(c['they_show'], 'person is', 'people are')} not looking for "
+                                f"{my_gender_word or 'people like you'}.", "fix": None})
+    if c["age"]:
+        reasons.append({"text": f"{_plural(c['age'], 'person is', 'people are')} outside your {age_min}–{age_max} age range.",
+                        "fix": "filters"})
+    if c["city"]:
+        reasons.append({"text": f"{_plural(c['city'], 'person is', 'people are')} outside {me.city}.", "fix": "filters"})
+    if c["verified"] or c["online"]:
+        reasons.append({"text": f"{_plural(c['verified'] + c['online'], 'person is', 'people are')} hidden by your "
+                                "'Verified only' / 'Online now' filters.", "fix": "filters"})
+    if c["liked"]:
+        reasons.append({"text": f"You already liked {_plural(c['liked'], 'person', 'people')}. "
+                                "If they like you back, you'll match.", "fix": None})
+    if c["passed"]:
+        reasons.append({"text": f"You passed on {_plural(c['passed'], 'person', 'people')}.", "fix": "passes"})
+    if c["hidden"]:
+        reasons.append({"text": f"{_plural(c['hidden'], 'person has', 'people have')} paused their profile.", "fix": None})
+    return reasons
+
+
+def search_members(user, q, limit=30):
+    """Find members by first name. Matches always show; others only if Discover could show them."""
+    q = (q or "").strip()
+    if len(q) < 2:
+        return []
+    matched = {m.other(user).pk: m.pk for m in Match.for_user(user).select_related("user_a", "user_b")}
+    blocked = blocked_ids(user)
+    me = user.profile
+    qs = (User.objects.filter(is_active=True, profile__isnull=False, first_name__icontains=q, photos__isnull=False)
+          .exclude(pk=user.pk).exclude(pk__in=blocked)
+          .select_related("profile").prefetch_related("photos").distinct()[:200])
+    results = []
+    for u in qs:
+        p = u.profile
+        is_match = u.pk in matched
+        if not is_match and not (p.is_visible and me.shows(p.gender) and p.shows(me.gender)):
+            continue
+        card = member_card(u, viewer=user)
+        card["match_id"] = matched.get(u.pk)
+        results.append(card)
+    results.sort(key=lambda c: (c["match_id"] is None, not c["online"], c["name"].lower()))
+    return results[:limit]

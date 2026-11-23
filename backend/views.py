@@ -163,8 +163,18 @@ def settings_view(request):
     blocks = Block.objects.filter(blocker=me).select_related("blocked").order_by("-created_at")
     return render(request, "dashboard/settings.html", {
         "p": me.profile,
+        "show_me_choices": Profile.SHOW_ME_CHOICES,
         "cities": CITY_CHOICES[1:],
         "blocked": [{"id": b.blocked_id, "name": b.blocked.display_name, "img": b.blocked.avatar_url} for b in blocks],
+    })
+
+
+@member_required
+def search(request):
+    q = request.GET.get("q", "").strip()
+    return render(request, "dashboard/search.html", {
+        "q": q,
+        "page_data": {"q": q, "results": services.search_members(request.user, q)},
     })
 
 

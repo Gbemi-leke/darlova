@@ -68,6 +68,17 @@ $(function () {
       });
     });
 
+  /* who you want to see */
+  $('#dShow').on('click', '[data-show]', function () {
+    var $b = $(this);
+    if ($b.hasClass('active')) return;
+    api('POST', '/api/settings/prefs/', { show_me: $b.data('show') }).done(function () {
+      $('#dShow [data-show]').removeClass('active').attr('aria-checked', 'false');
+      $b.addClass('active').attr('aria-checked', 'true');
+      showToast('You\'ll now see ' + $b.text().toLowerCase(), 'check-circle-fill');
+    });
+  });
+
   $('#incog').on('change', function () {
     if (this.checked) {
       this.checked = false;

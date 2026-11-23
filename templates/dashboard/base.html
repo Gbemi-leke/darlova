@@ -9,7 +9,7 @@
   <!-- Page styles -->
   {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="app-shell">
   <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
 
   {% include "dashboard/partials/sidebar.html" %}
@@ -20,12 +20,13 @@
       <a href="{% url 'home' %}" class="d-lg-none"><img src="{% static 'images/brand/logo-icon.png' %}" alt="Darlova home" width="38" height="38"></a>
       <div class="d-none d-md-block me-2">{% block topbar_title %}{% endblock %}</div>
 
-      <form class="search input-icon d-none d-sm-block ms-md-auto" action="{% url 'matches' %}" role="search">
+      <form class="search input-icon d-none d-sm-block ms-md-auto" action="{% url 'search' %}" role="search">
         <i class="bi bi-search"></i>
-        <input type="search" name="q" class="form-control py-2" placeholder="Search your matches…" aria-label="Search your matches" value="{{ request.GET.q }}">
+        <input type="search" name="q" class="form-control py-2" placeholder="Search people by name…" aria-label="Search people by name" value="{{ request.GET.q }}">
       </form>
 
       <div class="d-flex align-items-center gap-2 ms-auto">
+        <a href="{% url 'search' %}" class="btn btn-glass btn-icon d-sm-none" aria-label="Search people"><i class="bi bi-search"></i></a>
         {% include "partials/theme_switch.html" %}
         <a href="{% url 'notifications' %}" class="btn btn-glass btn-icon notif-btn" aria-label="Notifications"><i class="bi bi-bell"></i>{% if counts.unread_notifications %}<span class="pulse"></span>{% endif %}</a>
         {% include "dashboard/partials/account_menu.html" %}

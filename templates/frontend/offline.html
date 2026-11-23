@@ -1,0 +1,29 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#D81B60">
+  <title>You're offline — Darlova</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
+           font-family: -apple-system, system-ui, sans-serif; color: #fff;
+           background: radial-gradient(circle at 20% 10%, #7a1a4b, #1a0d22 60%); padding: 24px; }
+    img { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 12px 40px rgba(216, 27, 96, .45); }
+    h1 { font-size: 1.5rem; margin: 24px 0 8px; }
+    p { opacity: .8; margin: 0 0 24px; line-height: 1.5; }
+    button { border: 0; border-radius: 14px; padding: 14px 28px; font-size: 1rem; font-weight: 700; color: #fff;
+             background: linear-gradient(135deg, #e91e63, #7c3aed); }
+  </style>
+</head>
+<body>
+  <div>
+    <img src="{% static 'images/app/icon-192.png' %}" alt="Darlova">
+    <h1>You're offline</h1>
+    <p>Check your internet connection.<br>Your chats will be right here when you're back.</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+  <script>window.addEventListener('online', function () { location.reload(); });</script>
+</body>
+</html>

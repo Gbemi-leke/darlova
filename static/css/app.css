@@ -177,3 +177,13 @@
 @keyframes statBump {
   40% { transform: scale(1.08); }
 }
+
+/* ---------- installed app: keep clear of the iPhone home bar ---------- */
+@media (max-width: 991.98px) {
+  .app-bottom-nav {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .app-main {
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  }
+}

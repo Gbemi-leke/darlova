@@ -11,6 +11,7 @@ urlpatterns = [
     path("my-profile/", views.my_profile, name="my_profile"),
     path("settings/", views.settings_view, name="settings"),
     path("notifications/", views.notifications, name="notifications"),
+    path("search/", views.search, name="search"),
     path("notifications/<int:pk>/open/", views.open_notification, name="open_notification"),
 
     # JSON API used by the page scripts
@@ -18,6 +19,8 @@ urlpatterns = [
     path("api/notifications/read/", api.notifications_read, name="api_notifications_read"),
     path("api/discover/", api.discover, name="api_discover"),
     path("api/swipe/", api.swipe, name="api_swipe"),
+    path("api/passes/reset/", api.reset_passes, name="api_reset_passes"),
+    path("api/search/", api.search, name="api_search"),
     path("api/filters/", api.save_filters, name="api_filters"),
     path("api/unmatch/", api.unmatch, name="api_unmatch"),
     path("api/block/", api.block, name="api_block"),
