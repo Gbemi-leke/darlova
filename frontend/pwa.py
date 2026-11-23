@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.decorators.cache import cache_control
 
-APP_VERSION = "1"  # bump to make every installed app refresh its offline cache
+APP_VERSION = "2"  # bump to make every installed app refresh its offline cache
 
 
 @cache_control(max_age=3600)
@@ -41,40 +41,102 @@ def manifest(request):
     return HttpResponse(json.dumps(data), content_type="application/manifest+json")
 
 
-SERVICE_WORKER = """
-/* Darlova service worker — offline page + fast static files. */
-const CACHE = 'darlova-v__VERSION__';
+SERVICE_WORKER = r"""
+/* Darlova service worker
+   - Dashboard tabs open instantly from the phone's cache, then refresh in the background
+     (stale-while-revalidate), so the app feels like a native one even on slow networks.
+   - Anything you change (likes, messages, profile, settings, login/logout) clears that cache,
+     so you never see your own old data.
+   - CSS/JS/fonts are fingerprinted, so a cached copy is always right.
+   - No connection: a branded offline page. */
+const VERSION = '__VERSION__';
+const STATIC_CACHE = 'darlova-static-' + VERSION;
+const PAGE_CACHE = 'darlova-pages-' + VERSION;
 const OFFLINE = '/offline/';
-const PRECACHE = [OFFLINE, '__ICON__'];
+const APP_PAGES = ['/discover/', '/matches/', '/messages/', '/my-profile/', '/settings/', '/notifications/'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll([OFFLINE, '__ICON__'])).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => ![STATIC_CACHE, PAGE_CACHE].includes(k)).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
+const pageKey = (url) => new Request(url.origin + url.pathname);  // ?id=, ?tab= are read by the page script
+
+function savePage(key, res) {
+  // Only real dashboard pages: not redirects to the login page, not errors.
+  if (res.ok && !res.redirected && (res.headers.get('content-type') || '').includes('text/html')) {
+    const copy = res.clone();
+    caches.open(PAGE_CACHE).then((c) => c.put(key, copy));
+  }
+  return res;
+}
+
+function warm() {
+  // Load the dashboard tabs in the background so every tap is instant.
+  return caches.open(PAGE_CACHE).then((c) => Promise.all(APP_PAGES.map((p) =>
+    c.match(p).then((hit) => hit || fetch(p, { credentials: 'same-origin' })
+      .then((res) => savePage(new Request(self.location.origin + p), res)).catch(() => {}))
+  )));
+}
+
+let rewarmTimer = null;
+function clearPages(rewarm) {
+  clearTimeout(rewarmTimer);
+  return caches.delete(PAGE_CACHE).then(() => {
+    if (rewarm) rewarmTimer = setTimeout(warm, 2500);
+  });
+}
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'warm') e.waitUntil(warm());
+  if (e.data === 'clear') e.waitUntil(clearPages(false));
+});
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
-  if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
-  // Pages: always try the network (fresh data), show the offline page if there's no connection.
+  // A change (POST) makes the cached pages out of date: clear, then quietly reload them.
+  // Chat traffic (typing, sending) doesn't change any page, so it's ignored.
+  if (req.method !== 'GET') {
+    if (!/^\/api\/(chats|messages)\//.test(url.pathname)) e.waitUntil(clearPages(true));
+    return;
+  }
+
   if (req.mode === 'navigate') {
+    if (url.pathname === '/login/' || url.pathname === '/register/' || url.pathname === '/logout/') {
+      e.waitUntil(clearPages(false));  // a different person may use the phone next
+    }
+    if (APP_PAGES.includes(url.pathname)) {
+      const key = pageKey(url);
+      e.respondWith(
+        caches.open(PAGE_CACHE).then((c) => c.match(key)).then((cached) => {
+          const fresh = fetch(req).then((res) => savePage(key, res));
+          if (cached) {
+            e.waitUntil(fresh.catch(() => {}));  // refresh quietly for next time
+            return cached;                       // show instantly
+          }
+          return fresh.catch(() => caches.match(OFFLINE));
+        })
+      );
+      return;
+    }
     e.respondWith(fetch(req).catch(() => caches.match(OFFLINE)));
     return;
   }
-  // CSS / JS / fonts / icons have a fingerprint in their name, so a cached copy is always right.
+
   if (url.pathname.startsWith('/static/')) {
     e.respondWith(
       caches.match(req).then((hit) => hit || fetch(req).then((res) => {
-        if (res.ok) caches.open(CACHE).then((c) => c.put(req, res.clone()));
+        if (res.ok) { const copy = res.clone(); caches.open(STATIC_CACHE).then((c) => c.put(req, copy)); }
         return res;
       }))
     );
@@ -94,3 +156,10 @@ def service_worker(request):
 
 def offline(request):
     return render(request, "frontend/offline.html")
+
+
+def healthz(request):
+    """Tiny page for a cron job to call every few minutes, so the app never 'falls asleep'."""
+    resp = HttpResponse("ok", content_type="text/plain")
+    resp["Cache-Control"] = "no-store"
+    return resp

@@ -3,7 +3,8 @@
    ========================================================= */
 $(function () {
   var D = pageData(),
-    tab = ['matches', 'liked', 'visitors'].indexOf(D.tab) > -1 ? D.tab : 'matches';
+    urlTab = new URLSearchParams(location.search).get('tab') || D.tab,
+    tab = ['matches', 'liked', 'visitors'].indexOf(urlTab) > -1 ? urlTab : 'matches';
 
   function counts() {
     var fresh = D.matches.filter(function (m) { return m.new; }).length;

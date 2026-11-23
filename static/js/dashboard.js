@@ -45,6 +45,7 @@ $(function () {
   window.pulseNow = function () {
     return $.getJSON('/api/pulse/').done(updateBadges);
   };
+  pulseNow(); // fresh badges right away (the page itself may have come from the app's cache)
   setInterval(function () {
     if (!document.hidden) pulseNow();
   }, PULSE_MS);

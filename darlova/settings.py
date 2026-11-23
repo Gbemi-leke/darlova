@@ -181,3 +181,26 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # ---------------------------------------------------------------------------
 DAILY_LIKE_LIMIT = 50          # likes + super likes per day on the free plan
 ONLINE_WINDOW_SECONDS = 180    # "Online now" if active in the last 3 minutes
+
+
+# ---------------------------------------------------------------------------
+# Error reports
+# ---------------------------------------------------------------------------
+# Live-site errors are written to stderr.log (cPanel: ~/darlova/stderr.log) with the full traceback.
+# Set ADMIN_EMAIL in .env to also get each error by email.
+ADMINS = [("Darlova admin", os.environ["ADMIN_EMAIL"])] if os.environ.get("ADMIN_EMAIL") else []
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"plain": {"format": "[{asctime}] {levelname} {name}: {message}", "style": "{"}},
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "plain"},
+        "mail_admins": {"class": "django.utils.log.AdminEmailHandler", "level": "ERROR",
+                        "filters": ["require_debug_false"]},
+    },
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO"},
+        "django.request": {"handlers": ["console", "mail_admins"], "level": "ERROR", "propagate": False},
+    },
+}

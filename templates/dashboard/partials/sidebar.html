@@ -1,5 +1,5 @@
 <aside class="app-sidebar glass" aria-label="App menu">
-  <a href="{% url 'home' %}" class="mb-4 ps-2">{% include "partials/logo.html" %}</a>
+  <a href="{% url 'discover' %}" class="mb-4 ps-2">{% include "partials/logo.html" %}</a>
 
   <a class="side-link" data-page="{% url 'discover' %}" href="{% url 'discover' %}"><i class="bi bi-fire"></i>Discover</a>
   <a class="side-link" data-page="{% url 'matches' %}" href="{% url 'matches' %}"><i class="bi bi-heart"></i>Matches<span class="badge rounded-pill text-bg-light" data-count="new_matches"{% if not counts.new_matches %} hidden{% endif %}>{{ counts.new_matches }}</span></a>

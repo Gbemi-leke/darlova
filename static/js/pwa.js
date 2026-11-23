@@ -22,9 +22,27 @@
 
   $(function () {
     if (standalone) {
-      // Inside the installed app: the logo goes to the dashboard, and "Remember me" is on.
+      // Inside the installed app: links to the website's home go to the dashboard, and "Remember me" is on.
       $('a[href="/"]').attr('href', '/discover/');
       $('input[name="remember"]').prop('checked', true);
+
+      // Load the other tabs into the app's cache so every tap opens instantly.
+      if (navigator.serviceWorker && $('body').hasClass('app-shell')) {
+        navigator.serviceWorker.ready.then(function (reg) {
+          setTimeout(function () { reg.active && reg.active.postMessage('warm'); }, 1200);
+        });
+      }
+
+      // Instant feedback on tap: highlight the tab and show a thin loading bar.
+      $(document).on('click', 'a[href^="/"]:not([target]):not([data-bs-toggle]):not([download])', function (e) {
+        if (e.metaKey || e.ctrlKey || this.getAttribute('href').charAt(1) === '#') return;
+        $('.app-bottom-nav a, .app-sidebar .nav-link').removeClass('active');
+        $(this).filter('.app-bottom-nav a, .app-sidebar .nav-link').addClass('active');
+        $('#navBar').remove();
+        $('body').append('<div id="navBar" class="nav-progress"></div>');
+      });
+      // Coming back with the swipe-back gesture shows the cached page: hide the bar.
+      window.addEventListener('pageshow', function () { $('#navBar').remove(); });
       return;
     }
 
@@ -68,7 +86,7 @@
       if (deferred) return banner('Install it on your home screen. It opens full-screen, like a normal app.', true);
       if (isInApp) return banner('Open <strong>darlova.com</strong> in Safari or Chrome, then add it to your home screen.');
       if (isIOSChrome) return banner('Tap ' + shareIcon + ' in the address bar, then <strong>Add to Home Screen</strong>.');
-      if (isIOS) return banner('Tap ' + shareIcon + ' below, then <strong>Add to Home Screen</strong>.');
+      if (isIOS) return banner('Tap <strong>⋯</strong> or ' + shareIcon + ' → <strong>Share</strong>, then <strong>Add to Home Screen</strong>.');
       if (force && window.innerWidth > 991)
         return banner('Open <strong>darlova.com</strong> on your phone in Safari (iPhone) or Chrome (Android), then add it to your home screen.');
       if (force) banner('Open your browser menu <i class="bi bi-three-dots-vertical"></i> and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.');

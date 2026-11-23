@@ -119,8 +119,15 @@ $(function () {
   }
 
   /* ---------- save ---------- */
+  // The save bar only shows when something really differs from what's saved
+  // (phones can fire "input" events on load, e.g. from autofill).
+  function snapshot() {
+    return JSON.stringify($('.track').map(function () { return $(this).val(); }).get().concat(picked.slice().sort()));
+  }
+  var saved = null;
   function dirty() {
-    $('#saveBar').addClass('show');
+    if (saved === null) return;
+    $('#saveBar').toggleClass('show', snapshot() !== saved);
     strength();
   }
   function save() {
@@ -142,6 +149,7 @@ $(function () {
       prompt2_a: $('#eP2a').val(),
     })
       .done(function (r) {
+        saved = snapshot();
         $('#saveBar').removeClass('show');
         $('#meName').text(r.name);
         $('#meCity').text($('#eCity').val());
@@ -165,5 +173,6 @@ $(function () {
   renderPhotos();
   renderInterests();
   $('#bioCount').text($('#eBio').val().length);
+  saved = snapshot();
   setTimeout(strength, 300);
 });

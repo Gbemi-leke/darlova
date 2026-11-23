@@ -17,6 +17,7 @@ urlpatterns = [
     path("manifest.webmanifest", pwa.manifest, name="manifest"),
     path("sw.js", pwa.service_worker, name="service_worker"),
     path("offline/", pwa.offline, name="offline"),
+    path("healthz/", pwa.healthz, name="healthz"),
     path("api/password/request/", views.reset_request, name="reset_request"),
     path("api/password/verify/", views.reset_verify, name="reset_verify"),
     path("api/password/reset/", views.reset_password, name="reset_password"),
